@@ -1,0 +1,53 @@
+package com.example.BE_DATN.repository;
+
+import com.example.BE_DATN.dto.respone.FieldRespone;
+import com.example.BE_DATN.entity.Field;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface FieldRepository extends JpaRepository<Field,Long> {
+    @Query("SELECT CASE WHEN COUNT(f) = 1 THEN true ELSE false END FROM Field f WHERE f.name = :name AND f.idStadium = :idStadium AND f.idType = :idType")
+    boolean existsUniqueByNameAndStadiumAndType(String name, Long idStadium, Long idType);
+
+    Optional<Field> findById(Long id);
+
+    @Query("SELECT new com.example.BE_DATN.dto.respone.FieldRespone(f.idField, f.name, s.name, f.img, t.name, f.status, f.enable) " +
+            "FROM Field f " +
+            "JOIN Stadium s ON f.idStadium = s.idStadium " +
+            "JOIN Type t on f.idType = t.idType")
+//    câu query sẽ ánh xạ theo thứ tự của FieldRespone
+    List<FieldRespone> findAllFieldDetails();
+
+    @Query("SELECT new com.example.BE_DATN.dto.respone.FieldRespone(f.idField ,f.name, s.name, f.img, t.name, f.status, f.enable) " +
+            "FROM Field f " +
+            "JOIN Stadium s ON f.idStadium = s.idStadium " +
+            "JOIN Type t on f.idType = t.idType " +
+            "WHERE f.idField = :idField")
+    Optional<FieldRespone> findFieldDetailById(Long idField);
+
+    @Query("SELECT new com.example.BE_DATN.entity.Field(f.idField, f.idStadium, f.name, f.img, f.idType, f.status, f.enable) " +
+            "FROM Field f " +
+            "WHERE f.idType = :idType " +
+            "AND f.idStadium = :idStadium " +
+            "AND f.idField NOT IN (" +
+            " SELECT i.idField7 FROM IdField i WHERE i.idField7 IS NOT NULL" +
+            ")" +
+            "AND f.idField NOT IN (" +
+            " SELECT i.idField11 FROM IdField i WHERE i.idField11 IS NOT NULL" +
+            ")")
+    List<Field> findFieldByIdTypeAndIdStadium(@Param("idType") Long idType,@Param("idStadium") Long idStadium);
+
+//    kiểm tra xem id sân người dùng truyền vào có là sân 7 không
+    @Query("SELECT CASE WHEN COUNT(f) > 0 THEN true ELSE false END FROM Field f WHERE f.idField = :idField AND f.idType = :idType")
+    boolean existsByIdFieldAndIdType(Long idField, Long idType);
+
+// kiểm tra xem id sân người dùng truyền vào có là id sân 11 không
+    @Query("SELECT CASE WHEN COUNT(f) > 0 THEN true ELSE false END FROM Field f WHERE f.idField = :idField AND f.idType = :idType")
+    boolean existsByIdFieldAndIdType11(Long idField, Long idType);
+}
