@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -31,5 +32,10 @@ public class TimeServiceImpl implements TimeService {
     @Override
     public List<Time> getTime() {
         return timeRepository.findAll().stream().toList();
+    }
+
+    @Override
+    public List<Time> getTimeByIdFieldandDay(Long idField, LocalDate day) {
+        return timeRepository.findByIdFieldAndDay(idField, day);
     }
 }

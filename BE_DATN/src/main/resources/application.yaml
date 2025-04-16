@@ -38,3 +38,13 @@ minio:
   secretKey: minioadmin
   bucketName: manager
   bucketName2: field
+  bucketName3: services
+
+vnpay:
+  version: 2.1.0
+  command: pay
+  tmnCode: U4EVMUZ4
+  hashSecret: U07G1GYBZGEA0NM42QPL7JJCQR1LH2L1
+  payUrl: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+  returnUrl: http://localhost:3000/payment-success
+

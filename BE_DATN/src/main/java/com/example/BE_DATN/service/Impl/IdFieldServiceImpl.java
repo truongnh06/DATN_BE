@@ -35,6 +35,9 @@ public class IdFieldServiceImpl implements IdFieldService {
         if(count >= 4){
             throw new AppException(ErrorCode.MAXIMUN_FIELD11_REACHED);
         }
+        if(idFieldRepository.existsByIdField7(idFieldRequest.getIdField7())){
+            throw new AppException(ErrorCode.FIELD7_EXISTED);
+        }
         IdField idField = IdField.builder()
                 .idField7(idFieldRequest.getIdField7())
                 .idField11(idFieldRequest.getIdField11())

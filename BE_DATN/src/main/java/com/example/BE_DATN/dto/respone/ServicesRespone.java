@@ -8,12 +8,15 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserRespone {
-    Long idUser;
+public class ServicesRespone {
+    Long idService;
+    String nameStadium;
     String name;
-    String phoneNumber;
-    String password;
-    String email;
-    String nameRole;
+    double costPrice;
+    double retailPrice;
+    int quantity;
     String enable;
+    int quantitySold;
+    String img;
+    String unit;
 }

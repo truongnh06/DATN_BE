@@ -14,4 +14,5 @@ public interface FieldService {
     public FieldRespone update(Long id, FieldUpdate fieldUpdate, MultipartFile file);
     public List<Field> getFieldsByIdType(Long idType, Long idStadium);
     public Field removeField(Long idField);
+    public List<Field> getFiedlsByIdType2(Long idType, Long idStadium);
 }

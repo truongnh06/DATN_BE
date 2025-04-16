@@ -4,6 +4,7 @@ import com.example.BE_DATN.dto.request.UserRequest;
 import com.example.BE_DATN.dto.request.UserUpdate;
 import com.example.BE_DATN.dto.respone.ApiRespone;
 import com.example.BE_DATN.dto.respone.UserRespone;
+import com.example.BE_DATN.entity.User;
 import com.example.BE_DATN.exception.AppException;
 import com.example.BE_DATN.service.UserService;
 import jakarta.validation.Valid;
@@ -42,16 +43,16 @@ public class UserController {
     }
 
     @GetMapping("/{idUser}")
-    ApiRespone<UserRespone> getUser(@PathVariable("idUser") Long id_user){
+    ApiRespone<UserRespone> getUser(@PathVariable("idUser") Long idUser){
         return ApiRespone.<UserRespone>builder()
-                .result(userService.getUser(id_user))
+                .result(userService.getUser(idUser))
                 .build();
     }
 
     @DeleteMapping("/{idUser}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id_user){
+    public ResponseEntity<String> deleteUser(@PathVariable Long idUser){
         try{
-            userService.DeleteUser(id_user);
+            userService.DeleteUser(idUser);
             return ResponseEntity.ok("Deleted Success");
         } catch (AppException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
@@ -61,7 +62,25 @@ public class UserController {
     }
 
     @PutMapping("/{idUser}")
-    UserRespone updateUser(@PathVariable("idUser") Long id_user, @ModelAttribute UserUpdate userUpdate){
-        return userService.updateUser(id_user,userUpdate);
+    UserRespone updateUser(@PathVariable("idUser") Long idUser, @ModelAttribute UserUpdate userUpdate){
+        return userService.updateUser(idUser,userUpdate);
+    }
+
+    @PutMapping("/{idUser}/enable")
+    public ApiRespone<User> removeUser(@PathVariable("idUser") Long idUser){
+        return ApiRespone.<User>builder()
+                .code(200)
+                .message("Success")
+                .result(userService.removeUser(idUser))
+                .build();
+    }
+
+    @PutMapping("/{idUser}/role")
+    public ApiRespone<User> updateRole(@PathVariable("idUser") Long idUser){
+        return ApiRespone.<User>builder()
+                .code(200)
+                .message("Success")
+                .result(userService.updateRole(idUser))
+                .build();
     }
 }

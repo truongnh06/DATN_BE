@@ -50,4 +50,17 @@ public interface FieldRepository extends JpaRepository<Field,Long> {
 // kiểm tra xem id sân người dùng truyền vào có là id sân 11 không
     @Query("SELECT CASE WHEN COUNT(f) > 0 THEN true ELSE false END FROM Field f WHERE f.idField = :idField AND f.idType = :idType")
     boolean existsByIdFieldAndIdType11(Long idField, Long idType);
+
+// tìm kiếm sân 11 xem sân nào xuất hiện 4 lần trong bảng IdField thì không hiển thị ra vì nó đã được ghép thành sân to rồi
+    @Query("SELECT new com.example.BE_DATN.entity.Field(f.idField, f.idStadium, f.name, f.img, f.idType, f.status, f.enable) " +
+            "FROM Field f " +
+            "WHERE f.idType = :idType AND f.idStadium = :idStadium " +
+            "AND f.idField NOT IN (" +
+            " SELECT idField11 FROM IdField GROUP BY idField11 HAVING COUNT(*) = 4" +
+            ")")
+    List<Field> findFieldsByIdType11AndIdStadium(@Param("idType") Long idType, @Param("idStadium") Long idStadium);
+
+// lấy ra trạng thái của sân dựa vào idPrice
+    @Query("SELECT f.status FROM Price p JOIN Field f ON p.idField = f.idField WHERE p.idPrice = :idPrice")
+    String getStatusByIdPrice(@Param("idPrice") Long idPrice);
 }

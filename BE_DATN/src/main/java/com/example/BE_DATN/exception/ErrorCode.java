@@ -18,10 +18,20 @@ public enum ErrorCode {
     PHONE_NUMBER_EXISTED(2,"Phone number existed",HttpStatus.BAD_REQUEST),
     NAME_INVALID(2,"Name must be {min} characters or more", HttpStatus.FORBIDDEN),
     PASSWORD_INVALID(2,"Password have {min} character to {max} character ",HttpStatus.FORBIDDEN),
+
+    FIELD7_EXISTED(404, "Field 7 existed", HttpStatus.BAD_REQUEST),
     NOT_FOUND_FIELD_7(404,"Field 7 not found" , HttpStatus.NOT_FOUND),
     NOT_FOUND_FIELD_11(404,"Field 11 not found" , HttpStatus.NOT_FOUND),
+    FIELD_NOT_OPERATION(404, "The field is currently not in operation", HttpStatus.BAD_REQUEST),
+
     NAME_EXISTED(404,"Name existed", HttpStatus.BAD_REQUEST),
-    MAXIMUN_FIELD11_REACHED(404, "ID_FIELD_11 has reached the maximum of 4 entries", HttpStatus.BAD_REQUEST)
+    MAXIMUN_FIELD11_REACHED(404, "ID_FIELD_11 has reached the maximum of 4 entries", HttpStatus.BAD_REQUEST),
+
+    EXCEED(404, "Not enough quantity in stock for service", HttpStatus.BAD_REQUEST),
+    NOT_FOUND_SERVICE(404, "Not found ID service", HttpStatus.NOT_FOUND),
+    NOT_FOUND_BOOKING(404, "Not found ID booking", HttpStatus.NOT_FOUND),
+
+    SERVICE_INVALID(404, "Service invalid!", HttpStatus.BAD_REQUEST)
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

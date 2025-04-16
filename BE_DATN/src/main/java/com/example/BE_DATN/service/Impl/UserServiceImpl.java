@@ -6,6 +6,7 @@ import com.example.BE_DATN.dto.request.UserUpdate;
 import com.example.BE_DATN.dto.respone.UserRespone;
 import com.example.BE_DATN.entity.Role;
 import com.example.BE_DATN.entity.User;
+import com.example.BE_DATN.enums.Enable;
 import com.example.BE_DATN.enums.RoleEnums;
 import com.example.BE_DATN.exception.AppException;
 import com.example.BE_DATN.exception.ErrorCode;
@@ -40,6 +41,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         User user = userMapper.toUser(request);
         user.setIdRole(role.getIdRole());
+        user.setEnable(Enable.ENABLE.name());
         UserRespone user1 = userMapper.toUserRespone(userRepository.save(user));
         user1.setNameRole(role.getName());
         return user1;
@@ -71,8 +73,8 @@ public class UserServiceImpl implements UserService {
         UserRespone userRespone = userMapper.toUserRespone(user);
         userRespone.setNameRole(role.getName());
         userRespone.setIdUser(user.getIdUser());
+        userRespone.setEnable(user.getEnable());
         return userRespone;
-
     }
 
     @Override
@@ -107,6 +109,26 @@ public class UserServiceImpl implements UserService {
         userRespone.setNameRole(role.getName());
         return userRespone;
 
+    }
+
+    @Override
+    public User removeUser(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        user.setEnable(Enable.UNENABLE.name());
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User updateRole(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        Role role = roleRepository.findById(user.getIdRole())
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        String newRoleName = role.getName().equals(RoleEnums.ADMIN.name())
+                ? RoleEnums.USER.name()
+                : RoleEnums.ADMIN.name();
+        Role newRole = roleRepository.findByName(newRoleName).orElseThrow(() ->new AppException(ErrorCode.NOT_FOUND));
+        user.setIdRole(newRole.getIdRole());
+        return userRepository.save(user);
     }
 
 }

@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -29,6 +30,15 @@ public class TimeController {
         return ApiRespone.<List<Time>>builder()
                 .code(200)
                 .result(timeService.getTime())
+                .build();
+    }
+
+    @GetMapping("/{idField}/{day}")
+    ApiRespone<List<Time>> getTimeByIdFiedlAndDay(@PathVariable("idField") Long idField, @PathVariable("day")LocalDate day){
+        return  ApiRespone.<List<Time>>builder()
+                .code(200)
+                .message("Success")
+                .result(timeService.getTimeByIdFieldandDay(idField,day))
                 .build();
     }
 }

@@ -164,4 +164,9 @@ public class FieldServiceImpl implements FieldService {
         return fieldRepository.save(field);
     }
 
+    @Override
+    public List<Field> getFiedlsByIdType2(Long idType, Long idStadium) {
+        return fieldRepository.findFieldsByIdType11AndIdStadium(idType,idStadium);
+    }
+
 }

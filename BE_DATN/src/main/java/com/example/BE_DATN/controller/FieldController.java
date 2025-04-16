@@ -66,4 +66,13 @@ public class FieldController {
                 .result(fieldService.removeField(idField))
                 .build();
     }
+
+    @GetMapping("/{idType}/{idStadium}/Type11")
+    ApiRespone<List<Field>> getFieldByIdType11(@PathVariable("idType") Long idType,
+                                               @PathVariable("idStadium") Long idStadium){
+        return ApiRespone.<List<Field>>builder()
+                .code(200)
+                .result(fieldService.getFiedlsByIdType2(idType,idStadium))
+                .build();
+    }
 }
