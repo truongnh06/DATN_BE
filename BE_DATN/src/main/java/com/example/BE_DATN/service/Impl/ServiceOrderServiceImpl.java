@@ -2,6 +2,9 @@ package com.example.BE_DATN.service.Impl;
 
 import com.example.BE_DATN.Mapper.ServiceOrderMapper;
 import com.example.BE_DATN.dto.request.ServiceOrderRequest;
+import com.example.BE_DATN.dto.request.ServiceOrderUpdate;
+import com.example.BE_DATN.dto.respone.ServiceOrderDtoRespone;
+import com.example.BE_DATN.dto.respone.ServiceOrderRespone;
 import com.example.BE_DATN.entity.Booking;
 import com.example.BE_DATN.entity.ServiceOrder;
 import com.example.BE_DATN.entity.Services;
@@ -17,6 +20,11 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -43,6 +51,15 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
                 serviceOrderRequest.getIdService())){
             throw new AppException(ErrorCode.SERVICE_INVALID);
         }
+        Booking booking = bookingRepository.findById(serviceOrderRequest.getIdBooking())
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        LocalDate today = LocalDate.now();
+        if(!booking.getDay().isAfter(today)){
+            throw new AppException(ErrorCode.BOOKING_DAY_INVALID);
+        }
+        if(booking.getPaymentStatus().equalsIgnoreCase("UNPAID")){
+            throw new AppException(ErrorCode.BOOKING_NOT_PAY);
+        }
         if(services.getQuantity() < serviceOrderRequest.getQuantity()){
             throw new AppException(ErrorCode.EXCEED);
         }
@@ -58,4 +75,63 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
 
         return serviceOrderRepository.save(serviceOrder);
     }
+
+    @Override
+    public List<ServiceOrderRespone> findServicesByIdBooking(Long idBooking) {
+        return serviceOrderRepository.findServicesByIdBooking(idBooking);
+    }
+
+    @Override
+    public List<ServiceOrder> findByIdBooking(Long idBooking) {
+        return serviceOrderRepository.findByIdBooking(idBooking);
+    }
+
+    @Override
+    public List<ServiceOrderDtoRespone> getServiceOrderByIdTypeAndIdStadium(Long idType, Long idStadium) {
+        return serviceOrderRepository.findServiceOrderDtoByIdStadiumAndIdType(idType,idStadium);
+    }
+
+    @Transactional
+    @Override
+    public void deleteServiceOrder(Long idServiceOrder) {
+        ServiceOrderDtoRespone serviceOrderDtoRespone = serviceOrderRepository.findByIdServiceOrder(idServiceOrder)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        LocalDate today = LocalDate.now();
+        if(!serviceOrderDtoRespone.getDay().isAfter(today)){
+            throw new AppException(ErrorCode.BOOKING_DAY_INVALID);
+        }
+        Services services = servicesRepository.findById(serviceOrderDtoRespone.getIdService())
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        services.setQuantity(services.getQuantity() + serviceOrderDtoRespone.getQuantity());
+        services.setQuantitySold(services.getQuantitySold() - serviceOrderDtoRespone.getQuantity());
+        servicesRepository.save(services);
+        serviceOrderRepository.deleteByIdServiceOrder(serviceOrderDtoRespone.getIdServiceOrder());
+        return;
+    }
+    @Transactional
+    @Override
+    public ServiceOrder updateQuantityServiceOrder(Long idServiceOrder, ServiceOrderUpdate serviceOrderUpdate) {
+        ServiceOrderDtoRespone serviceOrderDtoRespone = serviceOrderRepository.findByIdServiceOrder(idServiceOrder)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        LocalDate today = LocalDate.now();
+        if(!serviceOrderDtoRespone.getDay().isAfter(today)){
+            throw new AppException(ErrorCode.BOOKING_DAY_INVALID);
+        }
+        ServiceOrder serviceOrder = serviceOrderRepository.findById(idServiceOrder)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        Services services = servicesRepository.findById(serviceOrder.getIdService())
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        int diffQuantity = serviceOrderUpdate.getQuantity() - serviceOrder.getQuantity();
+        if(diffQuantity > 0 && services.getQuantity() < diffQuantity){
+            throw new AppException(ErrorCode.QUANTITY_NOT_ENOUGH);
+        }
+        services.setQuantity(services.getQuantity() - diffQuantity);
+        services.setQuantitySold(services.getQuantitySold() + diffQuantity);
+        servicesRepository.save(services);
+
+        serviceOrder.setQuantity(serviceOrderUpdate.getQuantity());
+        serviceOrder.setTotalPrice(services.getRetailPrice() * serviceOrderUpdate.getQuantity());
+        return serviceOrderRepository.save(serviceOrder);
+    }
+
 }

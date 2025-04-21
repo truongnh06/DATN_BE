@@ -30,8 +30,12 @@ public enum ErrorCode {
     EXCEED(404, "Not enough quantity in stock for service", HttpStatus.BAD_REQUEST),
     NOT_FOUND_SERVICE(404, "Not found ID service", HttpStatus.NOT_FOUND),
     NOT_FOUND_BOOKING(404, "Not found ID booking", HttpStatus.NOT_FOUND),
+    BOOKING_NOT_PAY(404, "Booking has not been paid yet", HttpStatus.BAD_REQUEST),
+    CANOT_CANCEL_BOOKING(404, "Not cancel booking", HttpStatus.BAD_REQUEST),
+    BOOKING_DAY_INVALID(404, "Day invalid!", HttpStatus.BAD_REQUEST),
 
-    SERVICE_INVALID(404, "Service invalid!", HttpStatus.BAD_REQUEST)
+    SERVICE_INVALID(404, "Service invalid!", HttpStatus.BAD_REQUEST),
+    QUANTITY_NOT_ENOUGH(404, "Quantity is not enough", HttpStatus.BAD_REQUEST)
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

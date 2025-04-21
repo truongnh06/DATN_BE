@@ -4,13 +4,13 @@ import com.example.BE_DATN.configuration.VNPayConfig;
 import com.example.BE_DATN.dto.request.BookingRequest;
 import com.example.BE_DATN.dto.respone.BookingRespone;
 import com.example.BE_DATN.entity.Booking;
-import com.example.BE_DATN.entity.Price;
+import com.example.BE_DATN.entity.ServiceOrder;
+import com.example.BE_DATN.entity.Services;
+import com.example.BE_DATN.enums.Enable;
 import com.example.BE_DATN.enums.PaymentStatus;
 import com.example.BE_DATN.exception.AppException;
 import com.example.BE_DATN.exception.ErrorCode;
-import com.example.BE_DATN.repository.BookingRepository;
-import com.example.BE_DATN.repository.FieldRepository;
-import com.example.BE_DATN.repository.PriceRepository;
+import com.example.BE_DATN.repository.*;
 import com.example.BE_DATN.service.BookingService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
@@ -18,12 +18,14 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -31,10 +33,15 @@ import java.util.*;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingServiceImpl implements BookingService {
     @Autowired
+    private ServiceOrderRepository serviceOrderRepository;
+    @Autowired
     BookingRepository bookingRepository;
 
     @Autowired
     FieldRepository fieldRepository;
+
+    @Autowired
+    ServicesRepository servicesRepository;
 
     @Autowired
     VNPayConfig vnPayConfig;
@@ -44,6 +51,10 @@ public class BookingServiceImpl implements BookingService {
         if(bookingRequest.getDay() == null) {
             throw new AppException(ErrorCode.NOT_FOUND);
         }
+        LocalDate day = bookingRequest.getDay();
+        if(day.isBefore(LocalDate.now())){
+            throw new AppException(ErrorCode.BOOKING_DAY_INVALID);
+        }
     String status = fieldRepository.getStatusByIdPrice(bookingRequest.getIdPrice());
         if("INACTIVE".equalsIgnoreCase(status)){
             throw new AppException(ErrorCode.FIELD_NOT_OPERATION);
@@ -52,6 +63,7 @@ public class BookingServiceImpl implements BookingService {
                 .idUser(bookingRequest.getIdUser())
                 .idPrice(bookingRequest.getIdPrice())
                 .day(bookingRequest.getDay())
+                .enable(Enable.ENABLE.name())
                 .totalPrice(bookingRequest.getTotalPrice())
                 .paymentStatus(PaymentStatus.UNPAID.name())
                 .build();
@@ -120,8 +132,34 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingRespone> getBookings() {
-        return bookingRepository.findAllBooking();
+    public List<BookingRespone> getBookings(Long idStadium) {
+        return bookingRepository.findBookingByIdStadium(idStadium);
+    }
+
+    @Transactional
+    @Override
+    public Booking cancelBooking(Long idBooking) {
+        Booking booking = bookingRepository.findById(idBooking)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        LocalDate today = LocalDate.now();
+        if(!booking.getDay().isAfter(today)){
+            throw new AppException(ErrorCode.CANOT_CANCEL_BOOKING);
+        }
+        if(booking.getPaymentStatus().equalsIgnoreCase("UNPAID")){
+            throw new AppException(ErrorCode.BOOKING_NOT_PAY);
+        }
+        booking.setEnable(Enable.UNENABLE.name());
+        bookingRepository.save(booking);
+    List<ServiceOrder> serviceOrders = serviceOrderRepository.findByIdBooking(idBooking);
+    for(ServiceOrder serviceOrder : serviceOrders){
+        Services services = servicesRepository.findById(serviceOrder.getIdService())
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        services.setQuantity(services.getQuantity() + serviceOrder.getQuantity());
+        services.setQuantitySold(services.getQuantitySold() - serviceOrder.getQuantity());
+        servicesRepository.save(services);
+        }
+        serviceOrderRepository.deleteByIDBooking(idBooking);
+        return booking;
     }
 
     private String hmacSHA512(String key, String data) {

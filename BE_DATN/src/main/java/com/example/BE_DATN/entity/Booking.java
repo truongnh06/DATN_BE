@@ -22,4 +22,5 @@ public class Booking {
     LocalDate day;
     double totalPrice;
     String paymentStatus;
+    String enable;
 }

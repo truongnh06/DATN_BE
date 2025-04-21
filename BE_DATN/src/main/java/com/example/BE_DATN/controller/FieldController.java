@@ -75,4 +75,14 @@ public class FieldController {
                 .result(fieldService.getFiedlsByIdType2(idType,idStadium))
                 .build();
     }
+
+    @GetMapping("/{idStadium}/{idType}/enable")
+    ApiRespone<List<FieldRespone>> getFieldByIdStadiumAndIdType(@PathVariable("idStadium") Long idStadium,
+                                                                @PathVariable("idType") Long idType){
+        return ApiRespone.<List<FieldRespone>>builder()
+                .code(200)
+                .message("Success")
+                .result(fieldService.getFiedlsByIdStadiumAndIsTypeAndEnable(idStadium,idType))
+                .build();
+    }
 }

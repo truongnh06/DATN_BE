@@ -59,4 +59,13 @@ public class ServicesController {
                 .result(servicesService.getServicesByIdStadium(idStadium))
                 .build();
     }
+
+    @GetMapping("/{idService}/Service")
+    ApiRespone<Services> getServiceByIdService(@PathVariable("idService") Long idService){
+        return ApiRespone.<Services>builder()
+                .code(200)
+                .message("Success")
+                .result(servicesService.getServicesByIdService(idService))
+                .build();
+    }
 }

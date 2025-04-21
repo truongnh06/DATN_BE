@@ -13,4 +13,5 @@ public interface ServicesService {
     public Services removeServices(Long idService);
     public ServicesRespone updateServices(Long idService, ServicesUpdate servicesUpdate);
     public List<Services> getServicesByIdStadium(Long idStadium);
+    public Services getServicesByIdService(Long idService);
 }

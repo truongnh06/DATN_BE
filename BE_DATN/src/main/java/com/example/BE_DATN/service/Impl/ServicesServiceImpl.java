@@ -137,4 +137,9 @@ public class ServicesServiceImpl implements ServicesService {
     public List<Services> getServicesByIdStadium(Long idStadium) {
         return serviceRepository.findByIdStadium(idStadium);
     }
+
+    @Override
+    public Services getServicesByIdService(Long idService) {
+        return serviceRepository.findByIdService(idService);
+    }
 }

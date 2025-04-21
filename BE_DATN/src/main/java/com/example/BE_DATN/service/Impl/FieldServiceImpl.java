@@ -169,4 +169,8 @@ public class FieldServiceImpl implements FieldService {
         return fieldRepository.findFieldsByIdType11AndIdStadium(idType,idStadium);
     }
 
+    @Override
+    public List<FieldRespone> getFiedlsByIdStadiumAndIsTypeAndEnable(Long idStadium, Long idType) {
+        return fieldRepository.getFieldByIdStadiumAndIdTypeAndEnable(idStadium, idType);
+    }
 }

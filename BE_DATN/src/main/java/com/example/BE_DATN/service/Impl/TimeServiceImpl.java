@@ -2,6 +2,7 @@ package com.example.BE_DATN.service.Impl;
 
 import com.example.BE_DATN.dto.request.TimeRequest;
 import com.example.BE_DATN.entity.Time;
+import com.example.BE_DATN.repository.FieldRepository;
 import com.example.BE_DATN.repository.TimeRepository;
 import com.example.BE_DATN.service.TimeService;
 import lombok.AccessLevel;
@@ -20,6 +21,10 @@ import java.util.List;
 public class TimeServiceImpl implements TimeService {
     @Autowired
     TimeRepository timeRepository;
+
+    @Autowired
+    FieldRepository fieldRepository;
+
     @Override
     public Time createTime(TimeRequest timeRequest) {
         Time time = Time.builder()
@@ -36,6 +41,10 @@ public class TimeServiceImpl implements TimeService {
 
     @Override
     public List<Time> getTimeByIdFieldandDay(Long idField, LocalDate day) {
-        return timeRepository.findByIdFieldAndDay(idField, day);
+        if(fieldRepository.existsField11ByIdField(idField)){
+            return timeRepository.findByIdField11AndDay(day,idField);
+        } else {
+            return timeRepository.findByIdFieldAndDay(idField, day);
+        }
     }
 }

@@ -12,5 +12,6 @@ import java.util.Map;
 public interface BookingService {
     public String createVnpayPayment(BookingRequest bookingRequest, HttpServletRequest request);
     public Booking handleVnpayReturn(Map<String,String> params);
-    public List<BookingRespone> getBookings();
+    public List<BookingRespone> getBookings(Long idStadium);
+    public Booking cancelBooking(Long idBooking);
 }

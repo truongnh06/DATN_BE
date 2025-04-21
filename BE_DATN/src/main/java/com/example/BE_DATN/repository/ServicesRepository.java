@@ -14,4 +14,7 @@ public interface ServicesRepository extends JpaRepository<Services, Long> {
 
     @Query("SELECT s FROM Services s WHERE s.idStadium = :idStadium")
     List<Services> findByIdStadium(@Param("idStadium") Long idStadium);
+
+    @Query("SELECT s FROM Services s WHERE s.idService = :idService")
+    Services findByIdService(@Param("idService") Long idService);
 }

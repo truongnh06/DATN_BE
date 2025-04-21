@@ -11,17 +11,14 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class BookingRespone {
+public class ServiceOrderDtoRespone {
+    Long idServiceOrder;
     Long idBooking;
+    Long idService;
     String nameField;
-    String nameType;
+    String nameService;
+    int quantity;
     LocalTime time;
     LocalDate day;
-    String paymentStatus;
-    String nameStadium;
-    String address;
-    String phoneNumberStadium;
-    String nameUser;
-    String phoneNumberUser;
     double totalPrice;
 }

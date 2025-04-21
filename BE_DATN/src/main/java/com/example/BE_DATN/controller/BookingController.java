@@ -6,7 +6,6 @@ import com.example.BE_DATN.dto.respone.BookingRespone;
 import com.example.BE_DATN.entity.Booking;
 import com.example.BE_DATN.service.BookingService;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -40,12 +39,22 @@ public class BookingController {
                 .build();
     }
 
-    @GetMapping
-    public  ApiRespone<List<BookingRespone>> getBookings(){
+    @GetMapping("/{idStadium}")
+    public  ApiRespone<List<BookingRespone>> getBookings(@PathVariable("idStadium") Long idStadium){
         return ApiRespone.<List<BookingRespone>>builder()
                 .code(200)
                 .message("Success")
-                .result(bookingService.getBookings())
+                .result(bookingService.getBookings(idStadium))
                 .build();
     }
+
+    @PutMapping("/{idBooking}/enable")
+    public ApiRespone<Booking> cancelBooking(@PathVariable("idBooking") Long idBooking){
+        return ApiRespone.<Booking>builder()
+                .code(200)
+                .message("Success")
+                .result(bookingService.cancelBooking(idBooking))
+                .build();
+    }
+
 }

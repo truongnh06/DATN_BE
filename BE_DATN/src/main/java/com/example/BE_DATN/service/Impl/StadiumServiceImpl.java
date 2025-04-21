@@ -70,6 +70,7 @@ public class StadiumServiceImpl implements StadiumService {
 
         stadiumRepository.save(stadium);
         return StadiumRespone.builder()
+                .idStadium(stadium.getIdStadium())
                 .name(stadium.getName())
                 .address(stadium.getAddress())
                 .phoneNumber(stadium.getPhoneNumber())
