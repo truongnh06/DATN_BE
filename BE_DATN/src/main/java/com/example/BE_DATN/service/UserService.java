@@ -12,7 +12,8 @@ public interface UserService {
     public List<UserRespone> getUsers();
     public void DeleteUser(Long id);
     public UserRespone getUser(Long id);
-    public UserRespone updateUser(Long id, UserUpdate userUpdate);
+    public User updateUser(Long id, UserUpdate userUpdate);
     public User removeUser(Long id);
     public User updateRole(Long id);
+    public User changePassword(Long idUser, String pwd, String newPwd);
 }

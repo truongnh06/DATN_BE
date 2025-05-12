@@ -11,7 +11,5 @@ import lombok.experimental.FieldDefaults;
 public class UserUpdate {
     String name;
     String phoneNumber;
-    String password;
     String email;
-    String roleName;
 }

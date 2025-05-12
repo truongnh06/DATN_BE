@@ -31,4 +31,5 @@ public class User {
     @Column(nullable = false,unique = false,length = 50)
     String email;
     String enable;
+    String changePassword;
 }

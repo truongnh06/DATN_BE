@@ -53,7 +53,8 @@ public interface ServiceOrderRepository extends JpaRepository<ServiceOrder, Long
             "join Time t on t.idTime = p.idTime " +
             "where f.idType = :idType " +
             "and s.idStadium = :idStadium " +
-            "and b.enable = 'ENABLE'")
+            "and b.enable = 'ENABLE' " +
+            "ORDER BY b.day ASC")
     List<ServiceOrderDtoRespone> findServiceOrderDtoByIdStadiumAndIdType(@Param("idType") Long idType,
                                                                          @Param("idStadium") Long idStadium);
 
@@ -74,4 +75,11 @@ public interface ServiceOrderRepository extends JpaRepository<ServiceOrder, Long
     @Transactional
     @Query("DELETE from ServiceOrder s WHERE s.idServiceOrder = :idServiceOrder")
     void deleteByIdServiceOrder(@Param("idServiceOrder") Long idServiceOrder);
+
+    //kiểm tra xem có đơn hàng của idService trong tương lai không
+    @Query("SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM ServiceOrder s JOIN " +
+            "Booking b ON b.idBooking = s.idBooking " +
+            "WHERE b.day >= CURRENT_DATE " +
+            "AND s.idService = :idService")
+    boolean existsFutureOrdersByServiceId(@Param("idService") Long idService);
 }

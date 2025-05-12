@@ -35,6 +35,7 @@ public interface FieldRepository extends JpaRepository<Field,Long> {
             "FROM Field f " +
             "WHERE f.idType = :idType " +
             "AND f.idStadium = :idStadium " +
+            "AND f.enable = 'ENABLE'" +
             "AND f.idField NOT IN (" +
             " SELECT i.idField7 FROM IdField i WHERE i.idField7 IS NOT NULL" +
             ")")
@@ -52,6 +53,7 @@ public interface FieldRepository extends JpaRepository<Field,Long> {
     @Query("SELECT new com.example.BE_DATN.entity.Field(f.idField, f.idStadium, f.name, f.img, f.idType, f.status, f.enable) " +
             "FROM Field f " +
             "WHERE f.idType = :idType AND f.idStadium = :idStadium " +
+            "AND f.enable = 'ENABLE'" +
             "AND f.idField NOT IN (" +
             " SELECT idField11 FROM IdField GROUP BY idField11 HAVING COUNT(*) = 4" +
             ")")
@@ -77,4 +79,16 @@ public interface FieldRepository extends JpaRepository<Field,Long> {
             "WHERE f.idType = 2 " +
             "AND f.idField = :idField")
     boolean existsField11ByIdField(@Param("idField") Long idField);
+
+    //kiểm tra xem sân có tồn tại trong bảng field không
+    @Query("SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END FROM Field f " +
+            "WHERE f.idField = :idField")
+    boolean existsFieldByIdField(@Param("idField") Long idField);
+
+    //lấy danh sách sân theo idStadium và idType (list 7)
+    @Query("SELECT f FROM Field f WHERE f.idStadium = :idStadium " +
+            "AND f.idType = :idType " +
+            "AND f.enable = 'ENABLE'")
+    List<Field> getListFieldByIdTypeAndIdStadium(@Param("idType") Long idType,
+                                                 @Param("idStadium") Long idStadium);
 }

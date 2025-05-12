@@ -57,4 +57,12 @@ public class BookingController {
                 .build();
     }
 
+    @GetMapping("/{idField}/Field")
+    public ApiRespone<List<BookingRespone>> getBookingByIdField(@PathVariable("idField") Long idField){
+        return ApiRespone.<List<BookingRespone>>builder()
+                .code(200)
+                .message("Success")
+                .result(bookingService.getBookingByIdField(idField))
+                .build();
+    }
 }

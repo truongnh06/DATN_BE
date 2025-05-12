@@ -16,4 +16,5 @@ public interface FieldService {
     public Field removeField(Long idField);
     public List<Field> getFiedlsByIdType2(Long idType, Long idStadium);
     public List<FieldRespone> getFiedlsByIdStadiumAndIsTypeAndEnable(Long idStadium, Long idType);
+    public List<Field> getFieldByIdTypeAndIdStadium(Long idStadium);
 }

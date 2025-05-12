@@ -14,4 +14,5 @@ public interface BookingService {
     public Booking handleVnpayReturn(Map<String,String> params);
     public List<BookingRespone> getBookings(Long idStadium);
     public Booking cancelBooking(Long idBooking);
+    public List<BookingRespone> getBookingByIdField(Long idField);
 }

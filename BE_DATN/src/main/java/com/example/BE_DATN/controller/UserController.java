@@ -30,7 +30,7 @@ public class UserController {
     ApiRespone<UserRespone> createUser(@ModelAttribute @Valid UserRequest request){
         return ApiRespone.<UserRespone>builder()
                 .result(userService.createUser(request))
-                .code(1000)
+                .code(200)
                 .message("Success")
                 .build();
     }
@@ -62,8 +62,12 @@ public class UserController {
     }
 
     @PutMapping("/{idUser}")
-    UserRespone updateUser(@PathVariable("idUser") Long idUser, @ModelAttribute UserUpdate userUpdate){
-        return userService.updateUser(idUser,userUpdate);
+    public  ApiRespone<User> updateUser(@PathVariable("idUser") Long idUser, @ModelAttribute UserUpdate userUpdate){
+        return ApiRespone.<User>builder()
+                .code(200)
+                .message("Success")
+                .result(userService.updateUser(idUser,userUpdate))
+                .build();
     }
 
     @PutMapping("/{idUser}/enable")
@@ -81,6 +85,16 @@ public class UserController {
                 .code(200)
                 .message("Success")
                 .result(userService.updateRole(idUser))
+                .build();
+    }
+    @PutMapping("/{idUser}/changePassword")
+    public ApiRespone<User> changePassword(@PathVariable("idUser") Long idUser,
+                                           @RequestParam("newPwd") String newPwd,
+                                           @RequestParam("pwd") String pwd){
+        return ApiRespone.<User>builder()
+                .code(200)
+                .message("Success")
+                .result(userService.changePassword(idUser, pwd, newPwd))
                 .build();
     }
 }

@@ -143,7 +143,7 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         LocalDate today = LocalDate.now();
         if(!booking.getDay().isAfter(today)){
-            throw new AppException(ErrorCode.CANOT_CANCEL_BOOKING);
+            throw new AppException(ErrorCode.CANNOT_CANCEL_BOOKING);
         }
         if(booking.getPaymentStatus().equalsIgnoreCase("UNPAID")){
             throw new AppException(ErrorCode.BOOKING_NOT_PAY);
@@ -160,6 +160,11 @@ public class BookingServiceImpl implements BookingService {
         }
         serviceOrderRepository.deleteByIDBooking(idBooking);
         return booking;
+    }
+
+    @Override
+    public List<BookingRespone> getBookingByIdField(Long idField) {
+        return bookingRepository.findBookingByIdField(idField);
     }
 
     private String hmacSHA512(String key, String data) {

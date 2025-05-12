@@ -34,7 +34,7 @@ public class TimeController {
     }
 
     @GetMapping("/{idField}/{day}")
-    ApiRespone<List<Time>> getTimeByIdFiedlAndDay(@PathVariable("idField") Long idField, @PathVariable("day")LocalDate day){
+    ApiRespone<List<Time>> getTimeByIdFieldAndDay(@PathVariable("idField") Long idField, @PathVariable("day")LocalDate day){
         return  ApiRespone.<List<Time>>builder()
                 .code(200)
                 .message("Success")

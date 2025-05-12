@@ -8,6 +8,7 @@ import com.example.BE_DATN.entity.Role;
 import com.example.BE_DATN.entity.User;
 import com.example.BE_DATN.enums.Enable;
 import com.example.BE_DATN.enums.RoleEnums;
+import com.example.BE_DATN.enums.StatusChangePwd;
 import com.example.BE_DATN.exception.AppException;
 import com.example.BE_DATN.exception.ErrorCode;
 import com.example.BE_DATN.repository.RoleRepository;
@@ -42,6 +43,7 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toUser(request);
         user.setIdRole(role.getIdRole());
         user.setEnable(Enable.ENABLE.name());
+        user.setChangePassword(StatusChangePwd.FALSE.name());
         UserRespone user1 = userMapper.toUserRespone(userRepository.save(user));
         user1.setNameRole(role.getName());
         return user1;
@@ -67,18 +69,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserRespone getUser(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        Role role = roleRepository.findById(user.getIdUser())
+        return userRepository.getUserByIdUser(id)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
-        UserRespone userRespone = userMapper.toUserRespone(user);
-        userRespone.setNameRole(role.getName());
-        userRespone.setIdUser(user.getIdUser());
-        userRespone.setEnable(user.getEnable());
-        return userRespone;
     }
 
     @Override
-    public UserRespone updateUser(Long id, UserUpdate userUpdate) {
+    public User updateUser(Long id, UserUpdate userUpdate) {
         User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         if(userUpdate.getName() != null
                 && !userUpdate.getName().isBlank()
@@ -102,13 +98,7 @@ public class UserServiceImpl implements UserService {
             }
         }
         userMapper.updateUser(user,userUpdate);
-        Role role = roleRepository.findByName(userUpdate.getRoleName())
-                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
-        user.setIdRole(role.getIdRole());
-        UserRespone userRespone = userMapper.toUserRespone(userRepository.save(user));
-        userRespone.setNameRole(role.getName());
-        return userRespone;
-
+        return userRepository.save(user);
     }
 
     @Override
@@ -128,6 +118,14 @@ public class UserServiceImpl implements UserService {
                 : RoleEnums.ADMIN.name();
         Role newRole = roleRepository.findByName(newRoleName).orElseThrow(() ->new AppException(ErrorCode.NOT_FOUND));
         user.setIdRole(newRole.getIdRole());
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User changePassword(Long idUser, String pwd, String newPwd) {
+        User user = userRepository.findByIdUserAndPassword(idUser,pwd)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        user.setPassword(newPwd);
         return userRepository.save(user);
     }
 

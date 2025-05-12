@@ -25,6 +25,18 @@ spring:
       max-file-size: 50MB  # Tăng giới hạn file lên 50MB
       max-request-size: 50MB # Tăng giới hạn request lên 50MB
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: hatruong06012003@gmail.com
+    password: jginiiadneqboqpa
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 logging:
   level:
     org.springframework.security: DEBUG
@@ -39,6 +51,7 @@ minio:
   bucketName: manager
   bucketName2: field
   bucketName3: services
+  bucketName4: facility
 
 vnpay:
   version: 2.1.0

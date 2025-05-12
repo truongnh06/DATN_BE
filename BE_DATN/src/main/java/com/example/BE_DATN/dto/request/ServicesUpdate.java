@@ -13,7 +13,5 @@ import lombok.experimental.FieldDefaults;
 public class ServicesUpdate {
     String name;
     double retailPrice;
-    int quantity;
-    int quantitySold;
     double costPrice;
 }

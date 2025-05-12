@@ -20,7 +20,7 @@ public class UserRequest {
     String password;
 
     @NotBlank
-    @Size(min = 11, max = 20, message = "PHONE_NUMBER_INVALID")
+    @Size(min = 10, max = 20, message = "PHONE_NUMBER_INVALID")
     String phoneNumber;
 
     @NotBlank

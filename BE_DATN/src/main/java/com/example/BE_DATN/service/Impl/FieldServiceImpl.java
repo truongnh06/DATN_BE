@@ -11,10 +11,12 @@ import com.example.BE_DATN.enums.Enable;
 import com.example.BE_DATN.enums.StadiumStatus;
 import com.example.BE_DATN.exception.AppException;
 import com.example.BE_DATN.exception.ErrorCode;
+import com.example.BE_DATN.repository.BookingRepository;
 import com.example.BE_DATN.repository.FieldRepository;
 import com.example.BE_DATN.repository.StadiumRepository;
 import com.example.BE_DATN.repository.TypeRepository;
 import com.example.BE_DATN.service.FieldService;
+import com.example.BE_DATN.service.MinioService;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import lombok.AccessLevel;
@@ -44,6 +46,13 @@ public class FieldServiceImpl implements FieldService {
     StadiumRepository stadiumRepository;
     @Autowired
     TypeRepository typeRepository;
+
+    @Autowired
+    MinioService minioService;
+
+    @Autowired
+    BookingRepository bookingRepository;
+
     @Value("${minio.bucketName2}")
     String bucketName;
 
@@ -52,22 +61,7 @@ public class FieldServiceImpl implements FieldService {
 
     @Override
     public FieldRespone createField(FieldRequest fieldRequest, MultipartFile file) {
-        String imageUrl = null;
-        try {
-            String filename = "Field_" + file.getOriginalFilename();
-            InputStream inputStream = file.getInputStream();
-            minioClient.putObject(
-                    PutObjectArgs.builder()
-                            .bucket(bucketName)
-                            .object(filename)
-                            .stream(inputStream, file.getSize(), -1)
-                            .contentType(file.getContentType())
-                            .build()
-            );
-            imageUrl = String.format("%s/%s/%s", minioUrl, bucketName, filename);
-        } catch (Exception e) {
-            throw new RuntimeException("Error uploading file: " + e.getMessage());
-        }
+        String imageUrl = minioService.uploadFile(file, bucketName,"Field");
         Field field = Field.builder()
                 .idStadium(stadiumRepository.findByName(fieldRequest.getNameStadium())
                         .map(Stadium::getIdStadium).orElse(null))
@@ -95,18 +89,7 @@ public class FieldServiceImpl implements FieldService {
 
     @Override
     public List<FieldRespone> getFields() {
-        return fieldRepository.findAllFieldDetails().stream().map(field -> {
-            FieldRespone fieldRespone = FieldRespone.builder()
-                    .idField(field.getIdField())
-                    .name(field.getName())
-                    .img(field.getImg())
-                    .nameStadium(field.getNameStadium())
-                    .nameType(field.getNameType())
-                    .status(field.getStatus())
-                    .enable(field.getEnable())
-                    .build();
-            return fieldRespone;
-        }).toList();
+        return fieldRepository.findAllFieldDetails();
     }
 
     @Override
@@ -160,6 +143,9 @@ public class FieldServiceImpl implements FieldService {
     @Override
     public Field removeField(Long idField) {
         Field field = fieldRepository.findById(idField).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        if(bookingRepository.existsBookingInFutureByIdField(idField)){
+            throw new AppException(ErrorCode.BOOKING_EXISTS);
+        }
         field.setEnable(Enable.UNENABLE.name());
         return fieldRepository.save(field);
     }
@@ -172,5 +158,10 @@ public class FieldServiceImpl implements FieldService {
     @Override
     public List<FieldRespone> getFiedlsByIdStadiumAndIsTypeAndEnable(Long idStadium, Long idType) {
         return fieldRepository.getFieldByIdStadiumAndIdTypeAndEnable(idStadium, idType);
+    }
+
+    @Override
+    public List<Field> getFieldByIdTypeAndIdStadium(Long idStadium) {
+        return fieldRepository.getListFieldByIdTypeAndIdStadium(1L,idStadium);
     }
 }

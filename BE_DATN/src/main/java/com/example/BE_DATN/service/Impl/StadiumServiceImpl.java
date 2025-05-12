@@ -9,6 +9,7 @@ import com.example.BE_DATN.enums.StadiumStatus;
 import com.example.BE_DATN.exception.AppException;
 import com.example.BE_DATN.exception.ErrorCode;
 import com.example.BE_DATN.repository.StadiumRepository;
+import com.example.BE_DATN.service.MinioService;
 import com.example.BE_DATN.service.StadiumService;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
@@ -34,6 +35,9 @@ public class StadiumServiceImpl implements StadiumService {
     @Autowired
     StadiumMapper stadiumMapper;
 
+    @Autowired
+    MinioService minioService;
+
     @Value("${minio.bucketName}")
     String bucketName;
 
@@ -43,22 +47,7 @@ public class StadiumServiceImpl implements StadiumService {
     public StadiumRespone createStadium(StadiumRequest stadiumRequest, MultipartFile file) {
         if(stadiumRepository.existsByName(stadiumRequest.getName())){throw new AppException(ErrorCode.NAME_EXISTED);
         }
-        String imageUrl = null;
-        try{
-            String filename = "Stadium_" + file.getOriginalFilename();
-            InputStream inputStream = file.getInputStream();
-            minioClient.putObject(
-                    PutObjectArgs.builder()
-                            .bucket(bucketName)
-                            .object(filename)
-                            .stream(inputStream, file.getSize(), -1)
-                            .contentType(file.getContentType())
-                            .build()
-            );
-            imageUrl = String.format("%s/%s/%s",minioUrl, bucketName,filename);
-        } catch (Exception e){
-            throw new RuntimeException("Error uploading file: " + e.getMessage());
-        }
+        String imageUrl = minioService.uploadFile(file,bucketName,"Stadium");
         Stadium stadium = Stadium.builder()
                 .name(stadiumRequest.getName())
                 .address(stadiumRequest.getAddress())
