@@ -18,6 +18,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,6 +44,8 @@ public class StadiumServiceImpl implements StadiumService {
 
     @Value("${minio.url}")
     private String minioUrl;
+
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public StadiumRespone createStadium(StadiumRequest stadiumRequest, MultipartFile file) {
         if(stadiumRepository.existsByName(stadiumRequest.getName())){throw new AppException(ErrorCode.NAME_EXISTED);
@@ -85,6 +88,7 @@ public class StadiumServiceImpl implements StadiumService {
         }).toList();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public StadiumRespone updateStadium(Long id, StadiumUpdate stadiumUpdate) {
         Stadium stadium = stadiumRepository.findById(id).orElseThrow(() ->new AppException(ErrorCode.NOT_FOUND));

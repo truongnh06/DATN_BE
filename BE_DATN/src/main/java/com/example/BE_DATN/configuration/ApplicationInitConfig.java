@@ -1,6 +1,8 @@
 package com.example.BE_DATN.configuration;
 
 import com.example.BE_DATN.entity.User;
+import com.example.BE_DATN.enums.Enable;
+import com.example.BE_DATN.enums.StatusChangePwd;
 import com.example.BE_DATN.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
@@ -17,6 +19,10 @@ public class ApplicationInitConfig {
                 User user = User.builder()
                         .name("ADMIN")
                         .password("ADMIN")
+                        .email("ADMIN")
+                        .enable(Enable.ENABLE.name())
+                        .changePassword(StatusChangePwd.FALSE.name())
+                        .phoneNumber("ADMIN")
                         .idRole(2L)
                         .build();
                 userRepository.save(user);

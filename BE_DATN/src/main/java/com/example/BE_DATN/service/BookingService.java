@@ -15,4 +15,5 @@ public interface BookingService {
     public List<BookingRespone> getBookings(Long idStadium);
     public Booking cancelBooking(Long idBooking);
     public List<BookingRespone> getBookingByIdField(Long idField);
+    public List<BookingRespone> getBookingByIdStadiumAndIdUser(Long idStadium, Long idUser);
 }

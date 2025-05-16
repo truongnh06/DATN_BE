@@ -12,6 +12,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,6 +24,7 @@ public class IdFieldServiceImpl implements IdFieldService {
     @Autowired
     IdFieldRepository idFieldRepository;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public IdField createIdField(IdFieldRequest idFieldRequest) {
         if(!fieldRepository.existsByIdFieldAndIdType(idFieldRequest.getIdField7(), 1L)){

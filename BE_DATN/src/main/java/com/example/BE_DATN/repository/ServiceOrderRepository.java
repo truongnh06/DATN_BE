@@ -58,6 +58,25 @@ public interface ServiceOrderRepository extends JpaRepository<ServiceOrder, Long
     List<ServiceOrderDtoRespone> findServiceOrderDtoByIdStadiumAndIdType(@Param("idType") Long idType,
                                                                          @Param("idStadium") Long idStadium);
 
+    //lấy serviceOrder theo idUser, idStadium , idType
+    @Query("SELECT new com.example.BE_DATN.dto.respone.ServiceOrderDtoRespone(" +
+            "so.idServiceOrder, b.idBooking, so.idService, f.name, s.name, so.quantity, t.time, " +
+            "b.day, so.totalPrice) " +
+            "FROM ServiceOrder so join Booking b on so.idBooking = b.idBooking " +
+            "join Services s on so.idService = s.idService " +
+            "join Price p on b.idPrice = p.idPrice " +
+            "join Field f on f.idField = p.idField " +
+            "join Time t on t.idTime = p.idTime " +
+            "where f.idType = :idType " +
+            "and s.idStadium = :idStadium " +
+            "and b.idUser = :idUser " +
+            "and b.day >= current_date() " +
+            "and b.enable = 'ENABLE' " +
+            "ORDER BY b.day ASC")
+    List<ServiceOrderDtoRespone> findServiceOrderByIdUserAndIdStadiumType(@Param("idType") Long idType,
+                                                                       @Param("idStadium") Long idStadium,
+                                                                       @Param("idUser") Long idUser);
+
     //lấy ra serviceOrderRespone theo idServiceOrder
     @Query("SELECT new com.example.BE_DATN.dto.respone.ServiceOrderDtoRespone(" +
             "so.idServiceOrder, b.idBooking, so.idService, f.name, s.name, so.quantity, t.time, " +

@@ -1,6 +1,7 @@
 package com.example.BE_DATN.service.Impl;
 
 import com.example.BE_DATN.configuration.VNPayConfig;
+import com.example.BE_DATN.dto.CurrentAccountDTO;
 import com.example.BE_DATN.dto.request.BookingRequest;
 import com.example.BE_DATN.dto.respone.BookingRespone;
 import com.example.BE_DATN.entity.Booking;
@@ -17,6 +18,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -131,6 +133,7 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.save(booking);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<BookingRespone> getBookings(Long idStadium) {
         return bookingRepository.findBookingByIdStadium(idStadium);
@@ -165,6 +168,14 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingRespone> getBookingByIdField(Long idField) {
         return bookingRepository.findBookingByIdField(idField);
+    }
+
+    @Override
+    public List<BookingRespone> getBookingByIdStadiumAndIdUser(Long idStadium, Long idUser) {
+        if(!Objects.equals(CurrentAccountDTO.getIdUser(), idUser)){
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+        return bookingRepository.getBookingByIdStadiumAndIdUser(idStadium,idUser);
     }
 
     private String hmacSHA512(String key, String data) {

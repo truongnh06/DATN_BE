@@ -38,4 +38,13 @@ public interface UserRepository extends JpaRepository<User,Long> {
     //tìm xem có User nào tên là ADMIN chưa
     @Query("SELECT u FROM User u WHERE u.name = 'ADMIN'")
     Optional<User> findADMIN();
+
+    //lấy User ra theo name và password
+    @Query("SELECT u FROM User u WHERE u.name = :name " +
+            "AND u.password = :password")
+    Optional<User> GetUserLogin(@Param("name") String name, @Param("password") String password);
+
+    //findUserByName
+    @Query("SELECT u FROM User u WHERE u.name = :name")
+    Optional<User> FindUserByName(@Param("name") String name);
 }

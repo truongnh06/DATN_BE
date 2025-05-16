@@ -65,4 +65,14 @@ public class BookingController {
                 .result(bookingService.getBookingByIdField(idField))
                 .build();
     }
+
+    @GetMapping("/{idStadium}/{idUser}")
+    public ApiRespone<List<BookingRespone>> getBookingByIdStadiumAndIdUser(@PathVariable("idStadium") Long idStadium,
+                                                                           @PathVariable("idUser") Long idUser){
+        return ApiRespone.<List<BookingRespone>>builder()
+                .code(200)
+                .message("Success")
+                .result(bookingService.getBookingByIdStadiumAndIdUser(idStadium, idUser))
+                .build();
+    }
 }

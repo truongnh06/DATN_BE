@@ -17,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +34,8 @@ public class PriceServiceImpl implements PriceService {
     FieldRepository fieldRepository;
     @Autowired
     TimeRepository timeRepository;
+
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public PriceRespone createPrice(PriceRequest request) {
         Price price = priceMapper.toPrice(request);
@@ -51,6 +54,7 @@ public class PriceServiceImpl implements PriceService {
         return priceRepository.getPriceByIdField(idField);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public PriceRespone updatePrice(Long idPrice, PriceUpdate priceUpdate) {
         Price price = priceRepository.findByIdPrice(idPrice).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));

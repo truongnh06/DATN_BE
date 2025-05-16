@@ -24,6 +24,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -59,6 +60,7 @@ public class FieldServiceImpl implements FieldService {
     @Value("${minio.url}")
     private String minioUrl;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public FieldRespone createField(FieldRequest fieldRequest, MultipartFile file) {
         String imageUrl = minioService.uploadFile(file, bucketName,"Field");
@@ -92,6 +94,7 @@ public class FieldServiceImpl implements FieldService {
         return fieldRepository.findAllFieldDetails();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public FieldRespone update(Long idField, FieldUpdate fieldUpdate, MultipartFile file) {
         Field field = fieldRepository.findById(idField).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
@@ -140,6 +143,7 @@ public class FieldServiceImpl implements FieldService {
          return fieldRepository.findFieldByIdTypeAndIdStadium(idType,idStadium);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public Field removeField(Long idField) {
         Field field = fieldRepository.findById(idField).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));

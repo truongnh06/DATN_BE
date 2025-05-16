@@ -1,6 +1,7 @@
 package com.example.BE_DATN.service.Impl;
 
 import com.example.BE_DATN.Mapper.ServiceOrderMapper;
+import com.example.BE_DATN.dto.CurrentAccountDTO;
 import com.example.BE_DATN.dto.request.ServiceOrderRequest;
 import com.example.BE_DATN.dto.request.ServiceOrderUpdate;
 import com.example.BE_DATN.dto.respone.ServiceOrderDtoRespone;
@@ -19,11 +20,13 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,11 +89,13 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         return serviceOrderRepository.findByIdBooking(idBooking);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<ServiceOrderDtoRespone> getServiceOrderByIdTypeAndIdStadium(Long idType, Long idStadium) {
         return serviceOrderRepository.findServiceOrderDtoByIdStadiumAndIdType(idType,idStadium);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     @Override
     public void deleteServiceOrder(Long idServiceOrder) {
@@ -108,6 +113,8 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         serviceOrderRepository.deleteByIdServiceOrder(serviceOrderDtoRespone.getIdServiceOrder());
         return;
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     @Override
     public ServiceOrder updateQuantityServiceOrder(Long idServiceOrder, ServiceOrderUpdate serviceOrderUpdate) {
@@ -132,6 +139,15 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         serviceOrder.setQuantity(serviceOrderUpdate.getQuantity());
         serviceOrder.setTotalPrice(services.getRetailPrice() * serviceOrderUpdate.getQuantity());
         return serviceOrderRepository.save(serviceOrder);
+    }
+
+    @PreAuthorize("hasRole('USER')")
+    @Override
+    public List<ServiceOrderDtoRespone> getServiceOrderByIdUser(Long idType, Long idStadium, Long idUser) {
+        if(!Objects.equals(CurrentAccountDTO.getIdUser(),idUser)){
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+        return serviceOrderRepository.findServiceOrderByIdUserAndIdStadiumType(idType,idStadium,idUser);
     }
 
 }

@@ -43,7 +43,8 @@ public enum ErrorCode {
 
     SERVICES_NOT_FOUND(404, "Services not found", HttpStatus.BAD_REQUEST),
 
-    UNAUTHORIZED(404, "You do not have permission", HttpStatus.FORBIDDEN),
+    UNAUTHORIZED(403, "You do not have permission", HttpStatus.FORBIDDEN),
+    UNCATEGORIZED_EXCEPTION(401, "Unauthenticated!", HttpStatus.UNAUTHORIZED),
 
     SERVICE_INVALID(404, "Service invalid!", HttpStatus.BAD_REQUEST),
     QUANTITY_NOT_ENOUGH(404, "Quantity is not enough", HttpStatus.BAD_REQUEST),

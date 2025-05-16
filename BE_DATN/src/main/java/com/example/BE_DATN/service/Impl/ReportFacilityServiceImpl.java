@@ -16,6 +16,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -36,6 +37,7 @@ public class ReportFacilityServiceImpl implements ReportFacilityService {
     @Autowired
     UserRepository userRepository;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     @Override
     public ReportFacility createReport(ReportFacilityRequest reportFacilityRequest) {
@@ -77,6 +79,7 @@ public class ReportFacilityServiceImpl implements ReportFacilityService {
         return reportFacilityRepository.save(reportFacility);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<ReportFacilityRespone> getReportByIdStadium(Long idStadium) {
         return reportFacilityRepository.findReportByIdStadium(idStadium);

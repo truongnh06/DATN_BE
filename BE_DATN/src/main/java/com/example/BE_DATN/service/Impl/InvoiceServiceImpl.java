@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -30,6 +31,8 @@ public class InvoiceServiceImpl implements InvoiceService {
     BookingRepository bookingRepository;
     @Autowired
     UserRepository userRepository;
+
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public Invoice createInvoice(LocalDate day, Long idStadium, Long idUser, Long idBooking, double totalPrice) {
         if(!bookingRepository.existsBookingByIdBooking(idBooking)){
@@ -54,6 +57,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         return  invoiceRepository.save(invoice);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<InvoiceRespone> getInvoiceByMonth(Long idStadium) {
         List<Object[]> list = invoiceRepository.getListInvoiceByMonth(idStadium);
@@ -69,12 +73,14 @@ public class InvoiceServiceImpl implements InvoiceService {
         return InvoiceRespone;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public InvoiceDayRespone getInvoiceDay(LocalDate day, Long idStadium) {
         return invoiceRepository.getInvoiceDay(day, idStadium)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<ListInvoiceRespone> getInvoiceDayByIdStadium(Long idStadium, LocalDate day) {
         return invoiceRepository.getListInvoiceDayByIdStadium(idStadium, day);

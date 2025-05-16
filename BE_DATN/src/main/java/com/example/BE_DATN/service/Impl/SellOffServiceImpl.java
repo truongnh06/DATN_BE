@@ -19,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -38,6 +39,7 @@ public class SellOffServiceImpl implements SellOffService {
     @Autowired
     FacilityRepository facilityRepository;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     @Override
     public SellOff createSellOff(SellOffRequest request) {
@@ -76,11 +78,13 @@ public class SellOffServiceImpl implements SellOffService {
         return sellOffRepository.save(sellOff);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<SellOffRespone> getListSellOff(Long idStadium) {
         return sellOffRepository.getListSellOff(idStadium);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<SellOffMonthlyRespone> getSellOffMonthly(Long idStadium) {
         List<Object[]> list = sellOffRepository.getSellOffMonthly(idStadium);

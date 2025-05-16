@@ -5,11 +5,12 @@ import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.nio.file.AccessDeniedException;
 import java.util.Map;
 import java.util.Objects;
 
@@ -28,6 +29,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(errorCode.getStatusCode()).body(apiRespone);
     }
 
+    @ExceptionHandler(value = JwtException.class)
+    ResponseEntity<ApiRespone> handleJwtException(JwtException ex){
+        ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
+        return ResponseEntity.status(errorCode.getStatusCode())
+                .body(ApiRespone.builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build());
+    }
 
     @ExceptionHandler(value = AccessDeniedException.class)
     ResponseEntity<ApiRespone> handlingAccessDeniedException(AccessDeniedException exception){

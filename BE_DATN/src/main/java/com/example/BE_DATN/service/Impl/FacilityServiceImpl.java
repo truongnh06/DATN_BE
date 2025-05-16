@@ -18,6 +18,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,6 +41,7 @@ public class FacilityServiceImpl implements FacilityService {
     @Autowired
     BillFacilityRepository billFacilityRepository;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     @Override
     public Facility createFacility(FacilityRequest facilityRequest, MultipartFile file) {
@@ -81,6 +83,7 @@ public class FacilityServiceImpl implements FacilityService {
         return facilityRepository.findAllFacilityByIdStadium(idStadium);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public Facility updateFacility(Long idFacility, FacilityUpdate facilityUpdate) {
         Facility facility = facilityRepository.findById(idFacility)
@@ -99,6 +102,7 @@ public class FacilityServiceImpl implements FacilityService {
         return facilityRepository.save(facility);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public Facility removeFacility(Long idFacility) {
         Facility facility = facilityRepository.findById(idFacility)

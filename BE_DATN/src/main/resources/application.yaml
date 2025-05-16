@@ -37,13 +37,6 @@ spring:
           starttls:
             enable: true
 
-logging:
-  level:
-    org.springframework.security: DEBUG
-    org.springframework.web: DEBUG
-    org.springframework.beans.factory: DEBUG
-    org.mapstruct: DEBUG  # Thêm dòng này để bật logging cho MapStruct
-
 minio:
   url: http://localhost:9000
   accessKey: minioadmin
@@ -60,4 +53,9 @@ vnpay:
   hashSecret: U07G1GYBZGEA0NM42QPL7JJCQR1LH2L1
   payUrl: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
   returnUrl: http://localhost:3000/payment-success
+
+jwt:
+  signerKey: "W7B+tP+Dejy4R6RSdnl/eegEfsBI2c4jCoIyWdmzUzy1MzSC4Ky5HqdQ/6N1yUgs"
+  valid-duration: 120
+  refreshable-duration: 120
 

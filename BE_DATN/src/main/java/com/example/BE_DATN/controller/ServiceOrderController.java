@@ -75,4 +75,15 @@ public class ServiceOrderController {
                 .result(serviceOrderService.updateQuantityServiceOrder(idServiceOrder, serviceOrderUpdate))
                 .build();
     }
+
+    @GetMapping("/{idType}/{idStadium}/{idUser}")
+    ApiRespone<List<ServiceOrderDtoRespone>> getServiceOrderByIdUser(@PathVariable("idType") Long idType,
+                                                                  @PathVariable("idStadium") Long idStadium,
+                                                                  @PathVariable("idUser") Long idUser){
+        return ApiRespone.<List<ServiceOrderDtoRespone>>builder()
+                .code(200)
+                .message("Success")
+                .result(serviceOrderService.getServiceOrderByIdUser(idType,idStadium,idUser))
+                .build();
+    }
 }

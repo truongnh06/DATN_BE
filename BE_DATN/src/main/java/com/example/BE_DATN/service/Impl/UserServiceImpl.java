@@ -1,6 +1,7 @@
 package com.example.BE_DATN.service.Impl;
 
 import com.example.BE_DATN.Mapper.UserMapper;
+import com.example.BE_DATN.dto.CurrentAccountDTO;
 import com.example.BE_DATN.dto.request.UserRequest;
 import com.example.BE_DATN.dto.request.UserUpdate;
 import com.example.BE_DATN.dto.respone.UserRespone;
@@ -18,9 +19,14 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -49,6 +55,7 @@ public class UserServiceImpl implements UserService {
         return user1;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<UserRespone> getUsers() {
         return userRepository.findAll().stream().map(user ->{
@@ -61,6 +68,7 @@ public class UserServiceImpl implements UserService {
         }).toList();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public void DeleteUser(Long id) {
         userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -69,12 +77,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserRespone getUser(Long id) {
+        if(!Objects.equals(CurrentAccountDTO.getIdUser(), id)){
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
         return userRepository.getUserByIdUser(id)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
     }
 
+    @PreAuthorize("hasRole('USER')")
     @Override
     public User updateUser(Long id, UserUpdate userUpdate) {
+        if (!Objects.equals(CurrentAccountDTO.getIdUser(), id)) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
         User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         if(userUpdate.getName() != null
                 && !userUpdate.getName().isBlank()
@@ -101,6 +116,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public User removeUser(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -108,6 +124,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public User updateRole(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -121,8 +138,12 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @Override
     public User changePassword(Long idUser, String pwd, String newPwd) {
+        if(!Objects.equals(CurrentAccountDTO.getIdUser(),idUser)){
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
         User user = userRepository.findByIdUserAndPassword(idUser,pwd)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         user.setPassword(newPwd);

@@ -16,4 +16,5 @@ public interface ServiceOrderService {
     public List<ServiceOrderDtoRespone> getServiceOrderByIdTypeAndIdStadium(Long idType, Long idStadium);
     public void deleteServiceOrder(Long idServiceOrder);
     public ServiceOrder updateQuantityServiceOrder(Long idServiceOrder, ServiceOrderUpdate serviceOrderUpdate);
+    public List<ServiceOrderDtoRespone> getServiceOrderByIdUser(Long idType, Long idStadium, Long idUser);
 }

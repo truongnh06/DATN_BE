@@ -28,6 +28,24 @@ public interface BookingRepository extends JpaRepository<Booking,Long> {
             "ORDER BY b.day ASC")
     List<BookingRespone> findBookingByIdStadium(@Param("idStadium") Long idStadium);
 
+    //lấy booking theo idStadium and idUser
+    @Query("SELECT new com.example.BE_DATN.dto.respone.BookingRespone(" +
+            "b.idBooking, f.name, ty.name, ti.time, b.day, b.paymentStatus, " +
+            "s.name, s.address, s.phoneNumber, u.name, u.phoneNumber, b.totalPrice) " +
+            "FROM Booking b " +
+            "JOIN Price p ON b.idPrice = p.idPrice " +
+            "JOIN Field f ON f.idField = p.idField " +
+            "JOIN Type ty ON f.idType = ty.idType " +
+            "JOIN Time ti ON p.idTime = ti.idTime " +
+            "JOIN User u ON u.idUser = b.idUser " +
+            "JOIN Stadium s ON s.idStadium = f.idStadium " +
+            "WHERE f.idStadium = :idStadium " +
+            "AND b.enable = 'ENABLE' " +
+            "AND b.idUser = :idUser " +
+            "ORDER BY b.day ASC")
+    List<BookingRespone> getBookingByIdStadiumAndIdUser(@Param("idStadium") Long idStadium,
+                                                        @Param("idUser") Long idUser);
+
     //sử dụng để hiển thị lịch ra calender
     @Query("SELECT new com.example.BE_DATN.dto.respone.BookingRespone(" +
             "b.idBooking, f.name, ty.name, ti.time, b.day, b.paymentStatus, " +

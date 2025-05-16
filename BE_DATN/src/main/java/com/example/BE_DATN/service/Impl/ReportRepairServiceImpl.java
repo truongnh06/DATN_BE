@@ -18,6 +18,7 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -39,6 +40,7 @@ public class ReportRepairServiceImpl implements ReportRepairService {
     @Autowired
     UserRepository userRepository;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     @Override
     public ReportRepair createReportRepair(ReportRepairRequest request) {
@@ -79,11 +81,13 @@ public class ReportRepairServiceImpl implements ReportRepairService {
         return reportRepairRepository.save(reportRepair);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<ReportRepairRespone> getAllReportRepairRespone(Long idStadium) {
         return reportRepairRepository.getReportRepairRespone(idStadium);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<RepairMonthlyRespone> getRepairMonthly(Long idStadium) {
         List<Object[]> list = reportRepairRepository.getRepairMonthly(idStadium);

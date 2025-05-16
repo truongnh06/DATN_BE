@@ -63,10 +63,11 @@ public class UserController {
 
     @PutMapping("/{idUser}")
     public  ApiRespone<User> updateUser(@PathVariable("idUser") Long idUser, @ModelAttribute UserUpdate userUpdate){
+        User response = userService.updateUser(idUser,userUpdate);
         return ApiRespone.<User>builder()
                 .code(200)
                 .message("Success")
-                .result(userService.updateUser(idUser,userUpdate))
+                .result(response)
                 .build();
     }
 
