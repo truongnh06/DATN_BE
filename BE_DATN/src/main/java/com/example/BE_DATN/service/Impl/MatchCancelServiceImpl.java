@@ -12,6 +12,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -27,6 +28,8 @@ public class MatchCancelServiceImpl implements MatchCancelService {
     UserRepository userRepository;
     @Autowired
     MatchCancelRepository matchCancelRepository;
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public MatchCancel createMatchCancel(Long idMatching, Long idUserCancel, String reason, LocalDate day) {
         if(!userRepository.existsByIdUser(idUserCancel)){
@@ -44,6 +47,7 @@ public class MatchCancelServiceImpl implements MatchCancelService {
         return matchCancelRepository.save(matchCancel);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<MatchCancelRespone> getTopUserCancel() {
         return matchCancelRepository.getMatchCancelStatistics();

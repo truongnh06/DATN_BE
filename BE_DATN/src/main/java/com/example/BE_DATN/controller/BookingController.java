@@ -3,6 +3,7 @@ package com.example.BE_DATN.controller;
 import com.example.BE_DATN.dto.request.BookingRequest;
 import com.example.BE_DATN.dto.respone.ApiRespone;
 import com.example.BE_DATN.dto.respone.BookingRespone;
+import com.example.BE_DATN.dto.respone.RefundRespone;
 import com.example.BE_DATN.entity.Booking;
 import com.example.BE_DATN.service.BookingService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -73,6 +74,24 @@ public class BookingController {
                 .code(200)
                 .message("Success")
                 .result(bookingService.getBookingByIdStadiumAndIdUser(idStadium, idUser))
+                .build();
+    }
+
+    @GetMapping("/{idStadium}/refund")
+    public ApiRespone<List<RefundRespone>> getRefundResponse(@PathVariable("idStadium") Long idStadium){
+        return ApiRespone.<List<RefundRespone>>builder()
+                .code(200)
+                .message("Success")
+                .result(bookingService.getRefund(idStadium))
+                .build();
+    }
+
+    @PutMapping("/{idBooking}/refund")
+    public ApiRespone<Booking> RefundBooking(@PathVariable("idBooking") Long idBooking){
+        return ApiRespone.<Booking>builder()
+                .code(200)
+                .message("Success")
+                .result(bookingService.RefundBooking(idBooking))
                 .build();
     }
 }

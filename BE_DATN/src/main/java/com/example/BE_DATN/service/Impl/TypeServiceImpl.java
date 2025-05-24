@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
 public class TypeServiceImpl implements TypeService {
     @Autowired
     TypeRepository typeRepository;
+
     @Override
     public Type createType(TypeRequest typeRequest) {
         Type type = Type.builder()
@@ -26,6 +28,7 @@ public class TypeServiceImpl implements TypeService {
         return type;
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<Type> getTypes() {
         return typeRepository.findAll().stream().toList();

@@ -16,6 +16,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -42,6 +43,7 @@ public class MatchingServiceImpl implements MatchingService {
     @Autowired
     MatchCancelService matchCancelService;
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public Matching createMatching(MatchingRequest request) {
         if(!userRepository.existsByIdUser(request.getIdUserA())){
@@ -77,11 +79,13 @@ public class MatchingServiceImpl implements MatchingService {
         return matchingRepository.save(matching);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<MatchingRespone> getMatchingByIdStadium(Long idStadium) {
         return matchingRepository.getMatchingResponeByIdStadium(idStadium,1L);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Transactional
     @Override
     public Matching AcceptMatching(Long idMatching, Long idUserB) {
@@ -110,11 +114,13 @@ public class MatchingServiceImpl implements MatchingService {
         return saveMatching;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<MatchingRespone> getMatchByIdStadium(Long idStadium) {
         return matchingRepository.getMatchingResponeByIdStadium(idStadium, 2L);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public Matching unableMatching(Long idMatching, Long idUser) {
         Matching matching = matchingRepository.findById(idMatching)
@@ -132,6 +138,7 @@ public class MatchingServiceImpl implements MatchingService {
         return matchingRepository.save(matching);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Transactional
     @Override
     public Matching CancelMatching(Long idMatching, Long idUser, String reason) {
@@ -164,5 +171,11 @@ public class MatchingServiceImpl implements MatchingService {
             throw new AppException(ErrorCode.IVALID_KEY);
         }
         return matchingRepository.save(matching);
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @Override
+    public List<MatchingRespone> getMatchByIdStadiumAndIdUser(Long idStadium, Long idUser) {
+        return matchingRepository.getMatchingResponeByIdStadiumAndIdUser(idStadium,2L, idUser);
     }
 }

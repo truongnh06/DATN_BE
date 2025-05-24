@@ -3,6 +3,7 @@ import com.example.BE_DATN.dto.request.StadiumRequest;
 import com.example.BE_DATN.dto.request.StadiumUpdate;
 import com.example.BE_DATN.dto.respone.ApiRespone;
 import com.example.BE_DATN.dto.respone.StadiumRespone;
+import com.example.BE_DATN.entity.Stadium;
 import com.example.BE_DATN.service.StadiumService;
 import com.google.common.net.HttpHeaders;
 import io.minio.GetObjectArgs;
@@ -38,10 +39,10 @@ public class StadiumController {
     MinioClient minioClient;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiRespone<StadiumRespone> createStadium(
+    public ApiRespone<Stadium> createStadium(
             @Valid @ModelAttribute StadiumRequest stadiumRequest,
             @RequestParam("img") MultipartFile file) throws IOException{
-        return ApiRespone.<StadiumRespone>builder()
+        return ApiRespone.<Stadium>builder()
                 .code(200)
                 .message("Success")
                 .result(stadiumService.createStadium(stadiumRequest,file))
@@ -63,6 +64,24 @@ public class StadiumController {
                 .code(200)
                 .message("Success")
                 .result(stadiumService.updateStadium(id_stadium,stadiumUpdate))
+                .build();
+    }
+
+    @PutMapping("/{idStadium}/Status")
+    public ApiRespone<Stadium> updateStatusStadium(@PathVariable("idStadium") Long idStadium){
+        return ApiRespone.<Stadium>builder()
+                .code(200)
+                .message("Success")
+                .result(stadiumService.updateStatus(idStadium))
+                .build();
+    }
+
+    @GetMapping("/allStadium")
+    public ApiRespone<List<StadiumRespone>> getAllStadium(){
+        return ApiRespone.<List<StadiumRespone>>builder()
+                .code(200)
+                .message("Success")
+                .result(stadiumService.getAllStadiumEnable())
                 .build();
     }
 }

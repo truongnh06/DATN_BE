@@ -8,13 +8,11 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class StadiumRespone {
+public class FieldEmptyRespone {
+    Long idField;
     Long idStadium;
     String name;
-    String address;
-    String phoneNumber;
-    String status;
-    String enable;
     String img;
-    String nameDistrict;
+    String nameType;
+    double price;
 }

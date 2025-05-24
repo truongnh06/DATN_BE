@@ -31,6 +31,7 @@ public class BillFacilityServiceImpl implements BillFacilityService {
     @Autowired
     FacilityRepository facilityRepository;
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<BillFacilityRespone> getBillFacilityByIdFacility(Long idFacility) {
         return billFacilityRepository.getBillFacilityByIdFacility(idFacility);
@@ -55,6 +56,7 @@ public class BillFacilityServiceImpl implements BillFacilityService {
         return billFacilityRepository.save(billFacility);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<FacilityMonthlyRespone> getFacilityMonthly(Long idStadium) {
         List<Object[]> list = billFacilityRepository.getFacilityMonthly(idStadium);

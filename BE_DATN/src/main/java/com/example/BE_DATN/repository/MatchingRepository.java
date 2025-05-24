@@ -65,4 +65,27 @@ public interface MatchingRepository extends JpaRepository<Matching,Long> {
     @Query("SELECT m FROM Matching m WHERE m.idMatching = :idMatching " +
             "AND m.enable = 'ENABLE'")
     Optional<Matching> findMatchByIdMatching(@Param("idMatching") Long idMatching);
+
+    @Query("SELECT new com.example.BE_DATN.dto.respone.MatchingRespone(" +
+            "m.idMatching, ua.name, ub.name, ua.phoneNumber, ub.phoneNumber, f.name, t.name, " +
+            "m.day, ti.time, m.notes, sm.name, s.name, s.address, p.price, m.enable) " +
+            "FROM Matching m JOIN User ua ON ua.idUser = m.idUserA " +
+            "LEFT JOIN User ub ON ub.idUser = m.idUserB " +
+            "JOIN Field f ON f.idField = m.idField " +
+            "JOIN Time ti ON ti.idTime = m.idTime " +
+            "JOIN Stadium s ON s.idStadium = f.idStadium " +
+            "JOIN Type t ON t.idType = f.idType " +
+            "JOIN IdStatusMatching sm ON sm.idStatusMatching = m.idStatusMatching " +
+            "JOIN Price p on p.idField = m.idField and p.idTime = m.idTime " +
+            "WHERE f.idStadium = :idStadium " +
+            "AND (m.idUserA = :idUser OR m.idUserB = :idUser) " +
+            "AND f.enable = 'ENABLE' " +
+            "AND f.status = 'ACTIVE' " +
+            "AND m.day >= current_date() " +
+            "AND m.enable = 'ENABLE' " +
+            "AND m.idStatusMatching = :idStatusMatching " +
+            "ORDER BY m.day ASC, ti.time ASC")
+    List<MatchingRespone> getMatchingResponeByIdStadiumAndIdUser(@Param("idStadium") Long idStadium ,
+                                                        @Param("idStatusMatching") Long idStatusMatching,
+                                                        @Param("idUser") Long idUser);
 }

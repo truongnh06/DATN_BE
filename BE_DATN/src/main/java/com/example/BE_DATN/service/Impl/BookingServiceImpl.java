@@ -4,6 +4,7 @@ import com.example.BE_DATN.configuration.VNPayConfig;
 import com.example.BE_DATN.dto.CurrentAccountDTO;
 import com.example.BE_DATN.dto.request.BookingRequest;
 import com.example.BE_DATN.dto.respone.BookingRespone;
+import com.example.BE_DATN.dto.respone.RefundRespone;
 import com.example.BE_DATN.entity.Booking;
 import com.example.BE_DATN.entity.ServiceOrder;
 import com.example.BE_DATN.entity.Services;
@@ -48,6 +49,7 @@ public class BookingServiceImpl implements BookingService {
     @Autowired
     VNPayConfig vnPayConfig;
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public String createVnpayPayment(BookingRequest bookingRequest, HttpServletRequest request) {
         if(bookingRequest.getDay() == null) {
@@ -112,6 +114,7 @@ public class BookingServiceImpl implements BookingService {
         return vnPayConfig.getPayUrl() + "?" + queryUrl;
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public Booking handleVnpayReturn(Map<String, String> params) {
         String responseCode = params.get("vnp_ResponseCode");
@@ -133,12 +136,14 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.save(booking);
     }
 
+
     @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<BookingRespone> getBookings(Long idStadium) {
         return bookingRepository.findBookingByIdStadium(idStadium);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Transactional
     @Override
     public Booking cancelBooking(Long idBooking) {
@@ -146,7 +151,10 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         LocalDate today = LocalDate.now();
         if(!booking.getDay().isAfter(today)){
-            throw new AppException(ErrorCode.CANNOT_CANCEL_BOOKING);
+            throw new AppException(ErrorCode.BOOKING_DAY_INVALID);
+        }
+        if(bookingRepository.existsBookingOnMatching(idBooking)){
+            throw new AppException(ErrorCode.CANNOT_CANCEL_BOOKING_MATCH);
         }
         if(booking.getPaymentStatus().equalsIgnoreCase("UNPAID")){
             throw new AppException(ErrorCode.BOOKING_NOT_PAY);
@@ -165,17 +173,32 @@ public class BookingServiceImpl implements BookingService {
         return booking;
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<BookingRespone> getBookingByIdField(Long idField) {
         return bookingRepository.findBookingByIdField(idField);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<BookingRespone> getBookingByIdStadiumAndIdUser(Long idStadium, Long idUser) {
-        if(!Objects.equals(CurrentAccountDTO.getIdUser(), idUser)){
-            throw new AppException(ErrorCode.USER_NOT_FOUND);
-        }
         return bookingRepository.getBookingByIdStadiumAndIdUser(idStadium,idUser);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public List<RefundRespone> getRefund(Long idStadium) {
+        return bookingRepository.getRefund(idStadium);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public Booking RefundBooking(Long idBooking) {
+        Booking booking = bookingRepository.getBookingRefund(idBooking)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND_BOOKING));
+        booking.setPaymentStatus(PaymentStatus.UNPAID.name());
+        bookingRepository.save(booking);
+        return booking;
     }
 
     private String hmacSHA512(String key, String data) {

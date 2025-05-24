@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -28,6 +29,8 @@ public class EmailServiceImpl implements EmailService {
     JavaMailSender javaMailSender;
     @Autowired
     UserRepository userRepository;
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public void sendNewPassword(String email) {
         User user = userRepository.getUserByEmail(email)

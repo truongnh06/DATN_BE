@@ -3,6 +3,7 @@ package com.example.BE_DATN.service;
 
 import com.example.BE_DATN.dto.request.BookingRequest;
 import com.example.BE_DATN.dto.respone.BookingRespone;
+import com.example.BE_DATN.dto.respone.RefundRespone;
 import com.example.BE_DATN.entity.Booking;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -16,4 +17,6 @@ public interface BookingService {
     public Booking cancelBooking(Long idBooking);
     public List<BookingRespone> getBookingByIdField(Long idField);
     public List<BookingRespone> getBookingByIdStadiumAndIdUser(Long idStadium, Long idUser);
+    public List<RefundRespone> getRefund(Long idStadium);
+    public Booking RefundBooking(Long idBooking);
 }

@@ -52,11 +52,13 @@ public class BillServiceServiceImpl implements BillServiceService {
         return saveBillService;
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<BillServiceRespone> getListBillService(Long idService) {
         return billServiceRepository.getListBillService(idService);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<BillServiceMonthlyRespone> getServiceMonthlyByIdStadium(Long idStadium) {
         List<Object[]> list = billServiceRepository.getServiceMonthlyByIdStadium(idStadium);

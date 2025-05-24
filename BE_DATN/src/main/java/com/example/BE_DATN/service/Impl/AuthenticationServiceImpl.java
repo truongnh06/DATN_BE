@@ -1,6 +1,7 @@
 package com.example.BE_DATN.service.Impl;
 
 import com.example.BE_DATN.dto.respone.AuthenticationRespone;
+import com.example.BE_DATN.entity.Role;
 import com.example.BE_DATN.entity.Token;
 import com.example.BE_DATN.entity.User;
 import com.example.BE_DATN.enums.StatusChangePwd;
@@ -88,9 +89,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public AuthenticationRespone LogIn(String name, String password) {
        User user = userRepository.GetUserLogin(name,password)
                .orElseThrow(() -> new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION));
+        String role = roleRepository.getNameRole(user.getIdRole());
         return  AuthenticationRespone.builder()
                 .valid(StatusChangePwd.TRUE.name())
                 .token(generateToken(user))
+                .idUser(user.getIdUser())
+                .changePwd(user.getChangePassword())
+                .role(role)
                 .build();
     }
 

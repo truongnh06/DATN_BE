@@ -1,6 +1,7 @@
 package com.example.BE_DATN.repository;
 
 import com.example.BE_DATN.dto.respone.BookingRespone;
+import com.example.BE_DATN.dto.respone.RefundRespone;
 import com.example.BE_DATN.entity.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking,Long> {
@@ -42,6 +44,7 @@ public interface BookingRepository extends JpaRepository<Booking,Long> {
             "WHERE f.idStadium = :idStadium " +
             "AND b.enable = 'ENABLE' " +
             "AND b.idUser = :idUser " +
+            "AND b.day >= current_date " +
             "ORDER BY b.day ASC")
     List<BookingRespone> getBookingByIdStadiumAndIdUser(@Param("idStadium") Long idStadium,
                                                         @Param("idUser") Long idUser);
@@ -91,4 +94,37 @@ public interface BookingRepository extends JpaRepository<Booking,Long> {
             "AND b.enable = 'ENABLE' " +
             "AND b.paymentStatus = 'PAID'")
     boolean existsBookingInFutureByIdField(@Param("idField") Long idField);
+
+    //kiểm tra xem mã booking đó đã được đặt đối chưa
+    @Query("SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END FROM Booking b " +
+            "JOIN Price p ON b.idPrice = p.idPrice " +
+            "JOIN Matching m ON m.idField = p.idField " +
+            "WHERE m.day = b.day " +
+            "AND p.idField = m.idField " +
+            "AND p.idTime = m.idTime " +
+            "AND b.enable = 'ENABLE' " +
+            "AND b.paymentStatus = 'PAID' " +
+            "AND m.enable = 'ENABLE' " +
+            "AND b.idBooking = :idBooking")
+    boolean existsBookingOnMatching(@Param("idBooking") Long idBooking);
+
+    //lấy danh sách refund
+    @Query("SELECT new com.example.BE_DATN.dto.respone.RefundRespone( " +
+            "b.idBooking, u.name, u.phoneNumber, b.totalPrice) " +
+            "FROM Booking b JOIN User u " +
+            "ON b.idUser = u.idUser " +
+            "JOIN Price p ON p.idPrice = b.idPrice " +
+            "JOIN Field f ON f.idField = p.idField " +
+            "JOIN Stadium s ON s.idStadium = f.idStadium " +
+            "WHERE b.paymentStatus = 'PAID' " +
+            "AND b.enable = 'UNENABLE' " +
+            "AND f.idStadium = :idStadium " +
+            "AND u.enable = 'ENABLE'")
+    List<RefundRespone> getRefund(@Param("idStadium") Long idStadium);
+
+    //lấy booking theo idBooking
+    @Query("SELECT b from Booking b WHERE b.idBooking = :idBooking " +
+            "AND b.paymentStatus = 'PAID' " +
+            "AND b.enable = 'UNENABLE'")
+    Optional<Booking> getBookingRefund(@Param("idBooking") Long idBooking);
 }

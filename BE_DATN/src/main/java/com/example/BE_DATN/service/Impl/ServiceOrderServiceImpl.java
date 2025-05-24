@@ -45,6 +45,7 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
     @Autowired
     BookingRepository bookingRepository;
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Transactional
     @Override
     public ServiceOrder createServiceOrder(ServiceOrderRequest serviceOrderRequest) {
@@ -79,11 +80,13 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         return serviceOrderRepository.save(serviceOrder);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<ServiceOrderRespone> findServicesByIdBooking(Long idBooking) {
         return serviceOrderRepository.findServicesByIdBooking(idBooking);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<ServiceOrder> findByIdBooking(Long idBooking) {
         return serviceOrderRepository.findByIdBooking(idBooking);
@@ -141,12 +144,9 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         return serviceOrderRepository.save(serviceOrder);
     }
 
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<ServiceOrderDtoRespone> getServiceOrderByIdUser(Long idType, Long idStadium, Long idUser) {
-        if(!Objects.equals(CurrentAccountDTO.getIdUser(),idUser)){
-            throw new AppException(ErrorCode.USER_NOT_FOUND);
-        }
         return serviceOrderRepository.findServiceOrderByIdUserAndIdStadiumType(idType,idStadium,idUser);
     }
 

@@ -47,45 +47,27 @@ public class StadiumServiceImpl implements StadiumService {
 
     @PreAuthorize("hasRole('ADMIN')")
     @Override
-    public StadiumRespone createStadium(StadiumRequest stadiumRequest, MultipartFile file) {
+    public Stadium createStadium(StadiumRequest stadiumRequest, MultipartFile file) {
         if(stadiumRepository.existsByName(stadiumRequest.getName())){throw new AppException(ErrorCode.NAME_EXISTED);
         }
         String imageUrl = minioService.uploadFile(file,bucketName,"Stadium");
         Stadium stadium = Stadium.builder()
                 .name(stadiumRequest.getName())
                 .address(stadiumRequest.getAddress())
+                .idDistrict(stadiumRequest.getIdDistrict())
                 .phoneNumber(stadiumRequest.getPhoneNumber())
                 .enable(Enable.ENABLE.name())
                 .img(imageUrl)
                 .status(StadiumStatus.ACTIVE.name())
                 .build();
+        return stadiumRepository.save(stadium);
 
-        stadiumRepository.save(stadium);
-        return StadiumRespone.builder()
-                .idStadium(stadium.getIdStadium())
-                .name(stadium.getName())
-                .address(stadium.getAddress())
-                .phoneNumber(stadium.getPhoneNumber())
-                .enable(stadium.getEnable())
-                .img(stadium.getImg())
-                .status(stadium.getStatus())
-                .build();
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<StadiumRespone> getStadiums() {
-        return stadiumRepository.findAll().stream().map(stadium -> {
-            StadiumRespone stadiumRespone = StadiumRespone.builder()
-                    .idStadium(stadium.getIdStadium())
-                    .name(stadium.getName())
-                    .address(stadium.getAddress())
-                    .phoneNumber(stadium.getPhoneNumber())
-                    .enable(stadium.getEnable())
-                    .img(stadium.getImg())
-                    .status(stadium.getStatus())
-                    .build();
-            return stadiumRespone;
-        }).toList();
+        return  stadiumRepository.getAllStadium();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -94,7 +76,7 @@ public class StadiumServiceImpl implements StadiumService {
         Stadium stadium = stadiumRepository.findById(id).orElseThrow(() ->new AppException(ErrorCode.NOT_FOUND));
         stadiumMapper.updateStadium(stadium,stadiumUpdate);
         stadiumRepository.save(stadium);
-        StadiumRespone stadiumRespone = StadiumRespone.builder()
+        StadiumRespone stadiumRespone =StadiumRespone.builder()
                 .idStadium(stadium.getIdStadium())
                 .name(stadium.getName())
                 .address(stadium.getAddress())
@@ -104,6 +86,23 @@ public class StadiumServiceImpl implements StadiumService {
                 .status(stadium.getStatus())
                 .build();
         return stadiumRespone;
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public Stadium updateStatus(Long idStadium) {
+        Stadium stadium = stadiumRepository.findById(idStadium)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
+        String status = stadium.getStatus().equals(StadiumStatus.ACTIVE.name()) ?
+                StadiumStatus.INACTIVE.name() : StadiumStatus.ACTIVE.name();
+        stadium.setStatus(status);
+        return stadiumRepository.save(stadium);
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @Override
+    public List<StadiumRespone> getAllStadiumEnable() {
+        return stadiumRepository.getAllStadiumEnable();
     }
 
 }

@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -24,6 +25,8 @@ public class MessageServiceImpl implements MessageService {
     MessageRepository messageRepository;
     @Autowired
     WebSocketService webSocketService;
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public Message createMessage(Long idUser, String message, LocalDate day, Long idMatching) {
         Message mg = Message.builder()
@@ -36,6 +39,7 @@ public class MessageServiceImpl implements MessageService {
         return messageRepository.save(mg);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<Message> getMessageByIdUseNotYetRead(Long idUser) {
         List<Message> listMessage = messageRepository.getListMessageNotYetRead(idUser);
@@ -45,6 +49,7 @@ public class MessageServiceImpl implements MessageService {
         return listMessage;
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public Message updateRead(Long idMessage) {
         Message message = messageRepository.findById(idMessage)

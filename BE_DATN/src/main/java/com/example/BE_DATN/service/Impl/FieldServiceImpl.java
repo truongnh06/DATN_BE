@@ -3,6 +3,7 @@ package com.example.BE_DATN.service.Impl;
 import com.example.BE_DATN.Mapper.FieldMapper;
 import com.example.BE_DATN.dto.request.FieldRequest;
 import com.example.BE_DATN.dto.request.FieldUpdate;
+import com.example.BE_DATN.dto.respone.FieldEmptyRespone;
 import com.example.BE_DATN.dto.respone.FieldRespone;
 import com.example.BE_DATN.entity.Field;
 import com.example.BE_DATN.entity.Stadium;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.List;
 @Service
 @Slf4j
@@ -89,6 +91,7 @@ public class FieldServiceImpl implements FieldService {
                 .build();
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<FieldRespone> getFields() {
         return fieldRepository.findAllFieldDetails();
@@ -138,6 +141,7 @@ public class FieldServiceImpl implements FieldService {
         return fieldRepository.findFieldDetailById(idField).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<Field> getFieldsByIdType(Long idType, Long idStadium) {
          return fieldRepository.findFieldByIdTypeAndIdStadium(idType,idStadium);
@@ -154,18 +158,27 @@ public class FieldServiceImpl implements FieldService {
         return fieldRepository.save(field);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<Field> getFiedlsByIdType2(Long idType, Long idStadium) {
         return fieldRepository.findFieldsByIdType11AndIdStadium(idType,idStadium);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<FieldRespone> getFiedlsByIdStadiumAndIsTypeAndEnable(Long idStadium, Long idType) {
         return fieldRepository.getFieldByIdStadiumAndIdTypeAndEnable(idStadium, idType);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<Field> getFieldByIdTypeAndIdStadium(Long idStadium) {
         return fieldRepository.getListFieldByIdTypeAndIdStadium(1L,idStadium);
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @Override
+    public List<FieldEmptyRespone> getFieldEmpty(Long idStadium, LocalDate day, Long idTime) {
+        return fieldRepository.getFieldEmpty(day, idStadium, idTime);
     }
 }

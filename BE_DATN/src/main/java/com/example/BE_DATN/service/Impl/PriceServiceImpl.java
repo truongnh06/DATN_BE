@@ -49,6 +49,7 @@ public class PriceServiceImpl implements PriceService {
         return  priceRespone;
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<Price> getPrceByField(Long idField) {
         return priceRepository.getPriceByIdField(idField);

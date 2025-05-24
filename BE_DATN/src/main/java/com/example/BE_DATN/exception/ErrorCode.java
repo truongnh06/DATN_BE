@@ -34,6 +34,7 @@ public enum ErrorCode {
     NOT_FOUND_BOOKING(404, "Not found ID booking", HttpStatus.NOT_FOUND),
     BOOKING_NOT_PAY(404, "Booking has not been paid yet", HttpStatus.BAD_REQUEST),
     CANNOT_CANCEL_BOOKING(404, "Not cancel booking", HttpStatus.BAD_REQUEST),
+    CANNOT_CANCEL_BOOKING_MATCH(404, "Booking cancellation failed: the field has already been matched and cannot be canceled.", HttpStatus.BAD_REQUEST),
     BOOKING_DAY_INVALID(404, "Day invalid!", HttpStatus.BAD_REQUEST),
     BOOKING_INVALID(404, "Booking Invalid!", HttpStatus.BAD_REQUEST),
     BOOKING_EXISTS(404, "Booking exists!", HttpStatus.BAD_REQUEST),

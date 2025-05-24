@@ -29,4 +29,5 @@ public class Stadium {
     String status;
     @Column(nullable = false)
     String enable;
+    Long idDistrict;
 }

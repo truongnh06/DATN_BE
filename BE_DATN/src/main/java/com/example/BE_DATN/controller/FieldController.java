@@ -3,6 +3,7 @@ package com.example.BE_DATN.controller;
 import com.example.BE_DATN.dto.request.FieldRequest;
 import com.example.BE_DATN.dto.request.FieldUpdate;
 import com.example.BE_DATN.dto.respone.ApiRespone;
+import com.example.BE_DATN.dto.respone.FieldEmptyRespone;
 import com.example.BE_DATN.dto.respone.FieldRespone;
 import com.example.BE_DATN.entity.Field;
 import com.example.BE_DATN.service.FieldService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -91,6 +93,17 @@ public class FieldController {
                 .code(200)
                 .message("Success")
                 .result(fieldService.getFieldByIdTypeAndIdStadium(idStadium))
+                .build();
+    }
+
+    @GetMapping("/{idStadium}/{idTime}/{day}")
+    ApiRespone<List<FieldEmptyRespone>> getFieldEmpty(@PathVariable("idStadium") Long idStadium,
+                                                      @PathVariable("idTime") Long idTime,
+                                                      @PathVariable("day")LocalDate day){
+        return ApiRespone.<List<FieldEmptyRespone>>builder()
+                .code(200)
+                .message("Success")
+                .result(fieldService.getFieldEmpty(idStadium,day,idTime))
                 .build();
     }
 }

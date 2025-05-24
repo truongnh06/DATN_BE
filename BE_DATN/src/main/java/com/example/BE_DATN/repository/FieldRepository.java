@@ -1,5 +1,6 @@
 package com.example.BE_DATN.repository;
 
+import com.example.BE_DATN.dto.respone.FieldEmptyRespone;
 import com.example.BE_DATN.dto.respone.FieldRespone;
 import com.example.BE_DATN.entity.Field;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,4 +93,27 @@ public interface FieldRepository extends JpaRepository<Field,Long> {
             "AND f.enable = 'ENABLE'")
     List<Field> getListFieldByIdTypeAndIdStadium(@Param("idType") Long idType,
                                                  @Param("idStadium") Long idStadium);
+
+    //lấy danh sách sân trống theo ngày giờ khách chọn
+    @Query("SELECT new com.example.BE_DATN.dto.respone.FieldEmptyRespone(f.idField, f.idStadium, f.name, " +
+            "f.img, t.name, p.price ) " +
+            "FROM Field f JOIN Stadium s ON f.idStadium = s.idStadium " +
+            "JOIN Price p on f.idField = p.idField " +
+            "JOIN Type t ON t.idType = f.idType " +
+            "WHERE f.idStadium = :idStadium " +
+            "AND s.enable = 'ENABLE' " +
+            "AND p.idTime = :idTime " +
+            "AND s.status = 'ACTIVE' " +
+            "AND f.idField NOT IN (" +
+            "SELECT p.idField FROM Booking b " +
+            "JOIN Price p ON b.idPrice = p.idPrice " +
+            "WHERE b.day = :day " +
+            "AND p.idTime = :idTime " +
+            "AND b.paymentStatus = 'PAID' " +
+            "AND b.enable = 'ENABLE') " +
+            "AND f.enable = 'ENABLE' " +
+            "AND f.status = 'ACTIVE'")
+    List<FieldEmptyRespone> getFieldEmpty(@Param("day")LocalDate day,
+                                          @Param("idStadium") Long idStadium,
+                                          @Param("idTime") Long idTime);
 }

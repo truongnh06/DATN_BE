@@ -77,4 +77,15 @@ public class MatchingController {
                 .result(matchingService.CancelMatching(idMatching,idUser,reason))
                 .build();
     }
+
+    @GetMapping("/{idStadium}/{idUser}/match")
+    public ApiRespone<List<MatchingRespone>> getMatchByIdStadiumAndIdUser(@PathVariable("idStadium") Long idStadium,
+                                                                          @PathVariable("idUser") Long idUser){
+        return ApiRespone.<List<MatchingRespone>>builder()
+                .code(200)
+                .message("Success")
+                .result(matchingService.getMatchByIdStadiumAndIdUser(idStadium,idUser))
+                .build();
+    }
+
 }

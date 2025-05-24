@@ -145,11 +145,13 @@ public class ServicesServiceImpl implements ServicesService {
                 .build();
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<Services> getServicesByIdStadium(Long idStadium) {
         return serviceRepository.findByIdStadium(idStadium);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public Services getServicesByIdService(Long idService) {
         return serviceRepository.findByIdService(idService);

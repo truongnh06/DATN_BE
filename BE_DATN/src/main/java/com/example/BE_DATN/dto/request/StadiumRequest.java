@@ -20,5 +20,6 @@ public class StadiumRequest {
     @NotBlank(message = "PHONE_NUMBER")
     @Size(min = 10 , max = 20 , message = "PHONE_NUMBER_INVALID")
     String phoneNumber;
+    Long idDistrict;
     MultipartFile img;
 }

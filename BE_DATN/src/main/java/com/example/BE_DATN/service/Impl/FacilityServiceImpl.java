@@ -78,6 +78,7 @@ public class FacilityServiceImpl implements FacilityService {
         return saveFacility;
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public List<Facility> getFacilityByIdStadium(Long idStadium) {
         return facilityRepository.findAllFacilityByIdStadium(idStadium);

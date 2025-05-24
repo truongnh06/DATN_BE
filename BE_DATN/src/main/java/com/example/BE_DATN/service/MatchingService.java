@@ -13,4 +13,5 @@ public interface MatchingService {
     public List<MatchingRespone> getMatchByIdStadium(Long idStadium);
     public Matching unableMatching(Long idMatching, Long idUser);
     public Matching CancelMatching(Long idMatching, Long idUser, String reason);
+    public List<MatchingRespone> getMatchByIdStadiumAndIdUser(Long idStadium, Long idUser);
 }

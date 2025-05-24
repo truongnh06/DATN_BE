@@ -15,7 +15,7 @@ spring:
     properties:
       hibernate:
         physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    show-sql: true
+#    show-sql: true
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
 
@@ -56,6 +56,6 @@ vnpay:
 
 jwt:
   signerKey: "W7B+tP+Dejy4R6RSdnl/eegEfsBI2c4jCoIyWdmzUzy1MzSC4Ky5HqdQ/6N1yUgs"
-  valid-duration: 120
+  valid-duration: 3600
   refreshable-duration: 120
 

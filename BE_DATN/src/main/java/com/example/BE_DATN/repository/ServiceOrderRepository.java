@@ -72,6 +72,8 @@ public interface ServiceOrderRepository extends JpaRepository<ServiceOrder, Long
             "and b.idUser = :idUser " +
             "and b.day >= current_date() " +
             "and b.enable = 'ENABLE' " +
+            "AND b.paymentStatus = 'PAID' " +
+            "AND b.day >= current_date " +
             "ORDER BY b.day ASC")
     List<ServiceOrderDtoRespone> findServiceOrderByIdUserAndIdStadiumType(@Param("idType") Long idType,
                                                                        @Param("idStadium") Long idStadium,

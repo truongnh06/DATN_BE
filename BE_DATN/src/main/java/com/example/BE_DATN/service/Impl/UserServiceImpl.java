@@ -75,11 +75,9 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @Override
     public UserRespone getUser(Long id) {
-        if(!Objects.equals(CurrentAccountDTO.getIdUser(), id)){
-            throw new AppException(ErrorCode.USER_NOT_FOUND);
-        }
         return userRepository.getUserByIdUser(id)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
     }
@@ -87,7 +85,7 @@ public class UserServiceImpl implements UserService {
     @PreAuthorize("hasRole('USER')")
     @Override
     public User updateUser(Long id, UserUpdate userUpdate) {
-        if (!Objects.equals(CurrentAccountDTO.getIdUser(), id)) {
+        if(!Objects.equals(id,CurrentAccountDTO.getIdUser())){
             throw new AppException(ErrorCode.USER_NOT_FOUND);
         }
         User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -141,13 +139,13 @@ public class UserServiceImpl implements UserService {
     @PreAuthorize("hasRole('USER')")
     @Override
     public User changePassword(Long idUser, String pwd, String newPwd) {
-        if(!Objects.equals(CurrentAccountDTO.getIdUser(),idUser)){
+        if(!Objects.equals(idUser,CurrentAccountDTO.getIdUser())){
             throw new AppException(ErrorCode.USER_NOT_FOUND);
         }
         User user = userRepository.findByIdUserAndPassword(idUser,pwd)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         user.setPassword(newPwd);
+        user.setChangePassword(StatusChangePwd.TRUE.name());
         return userRepository.save(user);
     }
-
 }
