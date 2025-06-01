@@ -64,7 +64,8 @@ public class ServicesServiceImpl implements ServicesService {
         if(!stadiumRepository.existsByIdStadium(request.getIdStadium())){
             throw new AppException(ErrorCode.NOT_FOUND);
         }
-        if(serviceRepository.existsByName(request.getName())){throw new AppException(ErrorCode.NAME_EXISTED);}
+        if(serviceRepository.existsByName(request.getIdStadium(),request.getName()))
+        {throw new AppException(ErrorCode.NAME_EXISTED);}
         String imageUrl = minioService.uploadFile(file,bucketName,"Service");
         Services services = Services.builder()
                 .idStadium(request.getIdStadium())
@@ -123,7 +124,7 @@ public class ServicesServiceImpl implements ServicesService {
         if(servicesUpdate.getName() != null
                 && !servicesUpdate.getName().isBlank()
                 && !servicesUpdate.getName().equals(services.getName())){
-            if(serviceRepository.existsByName(servicesUpdate.getName())){
+            if(serviceRepository.existsByName(services.getIdStadium(),servicesUpdate.getName())){
                 throw new AppException(ErrorCode.NAME_EXISTED);
             }
             services.setName(servicesUpdate.getName());

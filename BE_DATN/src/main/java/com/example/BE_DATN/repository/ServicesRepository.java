@@ -11,7 +11,10 @@ import java.util.Optional;
 
 @Repository
 public interface ServicesRepository extends JpaRepository<Services, Long> {
-    boolean existsByName(String name);
+    @Query("SELECT CASE WHEN Count(*) > 0 THEN true ELSE false END FROM Services s " +
+            "WHERE s.idStadium = :idStadium AND s.name = :name AND s.enable = 'ENABLE'")
+    boolean existsByName(@Param("idStadium") Long idStadium,
+                         @Param("name") String name);
 
     @Query("SELECT s FROM Services s WHERE s.idStadium = :idStadium AND s.enable = 'ENABLE'")
     List<Services> findByIdStadium(@Param("idStadium") Long idStadium);
